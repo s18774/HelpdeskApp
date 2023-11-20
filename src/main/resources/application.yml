@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:C:\Users\maciwr\IdeaProjects\HelpdeskApp\test_db
+    username: user
+    password: user
+  h2:
+    console:
+      enabled: true
+      path: /console/
+  jpa:
+    hibernate:
+      ddl-auto: update
