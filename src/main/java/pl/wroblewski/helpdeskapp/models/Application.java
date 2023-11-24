@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Application {
+public class Application {//application aka wniosek xD, idk jak to przetłumaczyć lepiej
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "application_id")
@@ -18,5 +18,17 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "sla_id")
     private SLA sla;
+
+    @Column(name = "subject", length = 50)
+    private String subject;
+
+    @Column(name = "type_of_application", length = 30)
+    private String typeOfApplication;
+
+    @Column(name = "application_number")
+    private Long applicationNumber;
+
+    @Column(name = "description", length = 300)
+    private String description;
 
 }
