@@ -3,19 +3,18 @@ package pl.wroblewski.helpdeskapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity(name = "SLA")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
-public class SLA {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sla_id")
-    private Integer slaId;
+    @Column(name = "role_id")
+    private Integer roleId;
 
-    @Column(name = "sla_level")
-    private Short slaLevel;
+    @Column(name = "role_name")
+    private String roleName;
 }

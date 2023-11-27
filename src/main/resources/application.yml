@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:h2:file:C:\Users\maciwr\IdeaProjects\HelpdeskApp\test_db
+    url: jdbc:sqlserver://localhost;database=HelpDeskApp;encrypt=true;trustServerCertificate=true;
     username: user
     password: user
-  h2:
-    console:
-      enabled: true
-      path: /console/
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServer2012Dialect

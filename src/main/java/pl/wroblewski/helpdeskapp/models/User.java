@@ -52,4 +52,11 @@ public class User {
 
     @Column(name = "room")
     private Integer room;
+
+    @ManyToOne
+    private User supervisor;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
