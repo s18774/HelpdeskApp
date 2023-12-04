@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findByLogin(String login);
+    //wyszukiwanie po imieniu
+    //wyszukiwanie po nazwisku
 
 }
