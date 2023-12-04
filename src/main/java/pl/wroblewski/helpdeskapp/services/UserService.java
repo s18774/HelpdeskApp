@@ -16,5 +16,6 @@ public class UserService {
     public void authUser(String login, String password) throws InvalidCredentialsException {
         User user = userRepository.findByLogin(login).orElseThrow(InvalidCredentialsException::new);
         //dalsze porowanie hasla itp
+        //sprawdzanie do jakiego role należy login
     }
 }
