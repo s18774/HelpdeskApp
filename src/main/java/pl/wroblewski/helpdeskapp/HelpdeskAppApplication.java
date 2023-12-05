@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import pl.wroblewski.helpdeskapp.models.SLA;
+import pl.wroblewski.helpdeskapp.models.UserDeviceId;
 import pl.wroblewski.helpdeskapp.repositories.SLARepository;
+import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
+import pl.wroblewski.helpdeskapp.services.TicketService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.List;
@@ -44,7 +47,14 @@ public class HelpdeskAppApplication {
     }
 
     @Autowired
-    public void testService(UserService userService) {
+    public void testService(TicketService ticketService) {
+        var tickets = ticketService.getAllTickets();
+        System.out.println();
+    }
 
+    @Autowired
+    public void testUserDevice(UserDeviceRepository userDeviceRepository) {
+        var userDevice = userDeviceRepository.findById(UserDeviceId.builder().deviceId(1).userId(1).build());
+        System.out.println();
     }
 }

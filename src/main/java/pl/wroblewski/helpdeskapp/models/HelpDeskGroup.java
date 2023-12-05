@@ -10,16 +10,18 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class HelpDeskGroup {
+    @EmbeddedId
+    private HelpDeskGroupId id;
 
-    @Id
+    @MapsId("helpdeskId")
     @ManyToOne
     @JoinColumn(name = "helpdesk_id")
-    private HelpDesk helpDeskId;
+    private HelpDesk helpDesk;
 
-    @Id
+    @MapsId("groupId")
     @ManyToOne
     @JoinColumn(name = "group_id")
-    private Group groupId;
+    private Group group;
 
     @Column(name = "position_name", length = 25)
     private String positionName;

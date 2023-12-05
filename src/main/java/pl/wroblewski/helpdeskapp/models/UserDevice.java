@@ -10,16 +10,18 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserDevice {
+    @EmbeddedId
+    private UserDeviceId id;
 
-    @Id
+    @MapsId("userId")
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
-    @Id
+    @MapsId("deviceId")
     @ManyToOne
     @JoinColumn(name = "device_id")
-    private Device deviceId;
+    private Device device;
 
     @Column(name = "location_of_device")
     private String locationOfDevice;

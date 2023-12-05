@@ -13,15 +13,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserTicket {
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "application_id")
-    private Application applicationId;
+    @EmbeddedId
+    private UserTicketId id;
 
-    @Id
+    @MapsId("userId")
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
+
+    @MapsId("ticketId")
+    @ManyToOne
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
 
     @ManyToOne
     @JoinColumn(name = "stage_id")
