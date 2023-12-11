@@ -19,6 +19,7 @@ public class TicketService {
     //tworzenie zgłoszenia(zgłoszenie może stworzyć zalogowany użytkownik, helpdesk, admin)
     //zamykanie zgłoszenia(helpdesk, admin)
     //nadawanie sla do zgłoszenia(helpdesk, admin)
+    //przypisanie konkretnego pracownika do zgłoszenia(może to zrobić tylko admin)
     private final TicketRepository ticketRepository;
 
     public TicketService(TicketRepository ticketRepository) {

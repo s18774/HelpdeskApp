@@ -15,5 +15,6 @@ public class ApplicationService {
     //tworzenie wniosku(wniosek może stworzyć zalogowany użytkownik, helpdesk, admin)
     //zamykanie wniosku(helpdesk, admin)
     //nadawanie sla do wniosku(helpdesk, admin)
+    //przypisanie konkretnego pracownika do wniosku(może to zrobić tylko admin)
 
 }
