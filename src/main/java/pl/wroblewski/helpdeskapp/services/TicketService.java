@@ -12,9 +12,13 @@ public class TicketService {
 
     //pobieranie listy zgłoszeń
     //pobieranie zgłoszeń o konkretnym statusie/otwarte zamknięte
-    //pobieranie zgłoszeń dla konkretnego użytkownika
+    //pobieranie zgłoszeń dla konkretnego użytkownika(użytkownik po zalogowaniu może zobaczyć listę swoich zgłoszeń otwartych/zamkniętych)
     //pobieranie zgłoszeń z konkretnym sla(ważnością wykonania)
     //pobieranie zgłoszeń z danego przedziału czasu od - do
+    //
+    //tworzenie zgłoszenia(zgłoszenie może stworzyć zalogowany użytkownik, helpdesk, admin)
+    //zamykanie zgłoszenia(helpdesk, admin)
+    //nadawanie sla do zgłoszenia(helpdesk, admin)
     private final TicketRepository ticketRepository;
 
     public TicketService(TicketRepository ticketRepository) {
