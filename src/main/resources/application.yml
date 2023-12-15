@@ -10,3 +10,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServer2012Dialect
+
+
+jwt:
+  secret: 213fd2s1fe56f1ew5fewfnjkwe4
