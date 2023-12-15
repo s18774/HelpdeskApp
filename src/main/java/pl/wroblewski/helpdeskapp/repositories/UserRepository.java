@@ -10,4 +10,6 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     //wyszukiwanie po imieniu
     //wyszukiwanie po nazwisku
 
+    //edycja danych (administrator/lider)
+    //tworzenie/usuwanie konta użytkownika(admin/lider)
 }
