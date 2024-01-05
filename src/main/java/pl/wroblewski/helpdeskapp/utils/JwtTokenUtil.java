@@ -20,10 +20,9 @@ public class JwtTokenUtil {
                 .setClaims(Map.of(
                         "id", user.getUserId(),
                         "role", user.getRole().getRoleId(),
-                        "username", user.getLogin()))
-                //.setSubject("test")
-                // .setIssuedAt(new Date(System.currentTimeMillis()))
-                //.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                        "username", user.getLogin(),
+                        "exp", System.currentTimeMillis() + 1000 * 60 * 30,
+                        "ias", System.currentTimeMillis()))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }

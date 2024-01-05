@@ -3,10 +3,13 @@ package pl.wroblewski.helpdeskapp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.wroblewski.helpdeskapp.models.SLA;
+import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserDeviceId;
 import pl.wroblewski.helpdeskapp.repositories.SLARepository;
 import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
+import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 import pl.wroblewski.helpdeskapp.services.TicketService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
@@ -56,5 +59,15 @@ public class HelpdeskAppApplication {
     public void testUserDevice(UserDeviceRepository userDeviceRepository) {
         var userDevice = userDeviceRepository.findById(UserDeviceId.builder().deviceId(1).userId(1).build());
         System.out.println();
+    }
+
+    @Autowired
+    public void encodePassword(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        Optional<User> user = userRepository.findByLogin("tester");
+        if(user.isPresent()) {
+            user.get().setPassword(passwordEncoder.encode("tester"));
+            userRepository.save(user.get());
+            System.out.println("Password encoded!");
+        }
     }
 }
