@@ -4,15 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.SLA;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserDeviceId;
+import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
 import pl.wroblewski.helpdeskapp.repositories.SLARepository;
 import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 import pl.wroblewski.helpdeskapp.services.TicketService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,12 +65,20 @@ public class HelpdeskAppApplication {
     }
 
     @Autowired
-    public void encodePassword(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        Optional<User> user = userRepository.findByLogin("tester");
-        if(user.isPresent()) {
-            user.get().setPassword(passwordEncoder.encode("tester"));
-            userRepository.save(user.get());
-            System.out.println("Password encoded!");
+    public void init(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        if(((ArrayList<Role>) roleRepository.findAll()).isEmpty()) {
+            roleRepository.save(Role.builder().roleName("Guest").build());
+            roleRepository.save(Role.builder().roleName("User").build());
+            roleRepository.save(Role.builder().roleName("Admin").build());
+        }
+
+        if(userRepository.findByLogin("tester").isEmpty()) {
+            User user = User.builder()
+                    .login("tester")
+                    .password(passwordEncoder.encode("tester"))
+                    .role(roleRepository.findById(2).get())
+                    .build();
+            userRepository.save(user);
         }
     }
 }

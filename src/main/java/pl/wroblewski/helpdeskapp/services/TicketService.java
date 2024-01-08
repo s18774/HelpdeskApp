@@ -1,12 +1,16 @@
 package pl.wroblewski.helpdeskapp.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.models.Ticket;
+import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.repositories.TicketRepository;
+import pl.wroblewski.helpdeskapp.repositories.UserTicketRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TicketService {
     //to do list
 
@@ -21,13 +25,11 @@ public class TicketService {
     //nadawanie sla do zgłoszenia(helpdesk, admin)
     //przypisanie konkretnego pracownika do zgłoszenia(może to zrobić tylko admin)
     private final TicketRepository ticketRepository;
+    private final UserTicketRepository userTicketRepository;
 
-    public TicketService(TicketRepository ticketRepository) {
-        this.ticketRepository = ticketRepository;
-    }
 
-    public List<Ticket> getAllTickets() {
-        return (List<Ticket>) ticketRepository.findAll();
+    public List<UserTicket> getAllTickets() {
+        return (List<UserTicket>) userTicketRepository.findAll();
     }
 
     public void addTicket(Ticket ticket) {

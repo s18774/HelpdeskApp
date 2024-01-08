@@ -22,7 +22,7 @@ public class JwtTokenUtil {
                         "role", user.getRole().getRoleId(),
                         "username", user.getLogin(),
                         "exp", System.currentTimeMillis() + 1000 * 60 * 30,
-                        "ias", System.currentTimeMillis()))
+                        "iat", System.currentTimeMillis()))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
