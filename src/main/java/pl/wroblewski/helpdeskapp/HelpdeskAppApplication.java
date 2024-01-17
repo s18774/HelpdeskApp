@@ -72,13 +72,14 @@ public class HelpdeskAppApplication {
             roleRepository.save(Role.builder().roleName("Admin").build());
         }
 
-        if(userRepository.findByLogin("tester").isEmpty()) {
-            User user = User.builder()
-                    .login("tester")
-                    .password(passwordEncoder.encode("tester"))
-                    .role(roleRepository.findById(2).get())
-                    .build();
-            userRepository.save(user);
-        }
+        System.out.println(passwordEncoder.encode("test"));
+//        if(userRepository.findByLogin("tester").isEmpty()) {
+//            User user = User.builder()
+//                    .login("tester")
+//                    .password(passwordEncoder.encode("tester"))
+//                    .role(roleRepository.findById(2).get())
+//                    .build();
+//            userRepository.save(user);
+//        }
     }
 }

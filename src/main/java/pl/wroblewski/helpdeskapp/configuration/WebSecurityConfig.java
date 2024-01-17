@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(req ->
                                 req.requestMatchers(HttpMethod.OPTIONS, "/**")
                                         .permitAll()
-                                        .requestMatchers("/api/v1/auth", "/api/v1/ticket") //TODO: usunac ticket
+                                        .requestMatchers("/api/v1/auth")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated()
