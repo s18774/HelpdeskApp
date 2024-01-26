@@ -28,8 +28,8 @@ public class TicketService {
     private final UserTicketRepository userTicketRepository;
 
 
-    public List<UserTicket> getAllTickets() {
-        return (List<UserTicket>) userTicketRepository.findAll();
+    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId) {
+        return (List<UserTicket>) userTicketRepository.findByTicketIdAndUserIdAndSlaId(ticketId, userId, slaId);
     }
 
     public void addTicket(Ticket ticket) {

@@ -6,14 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.SLA;
-import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserDeviceId;
 import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
 import pl.wroblewski.helpdeskapp.repositories.SLARepository;
 import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 import pl.wroblewski.helpdeskapp.services.TicketService;
-import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +52,10 @@ public class HelpdeskAppApplication {
 
     @Autowired
     public void testService(TicketService ticketService) {
-        var tickets = ticketService.getAllTickets();
-        System.out.println();
+        var tickets = ticketService.getTickets(null, 1, null);
+        for(var ticket : tickets) {
+            System.out.println(ticket);
+        }
     }
 
     @Autowired
