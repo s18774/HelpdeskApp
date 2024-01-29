@@ -10,6 +10,7 @@ import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -33,5 +34,9 @@ public class UserService implements UserDetailsService {
 
     public User getUser(String username) {
         return userRepository.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+    }
+
+    public List<User> getAllUsers() {
+        return (List<User>) userRepository.findAll();
     }
 }
