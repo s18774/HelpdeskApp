@@ -2,10 +2,8 @@ package pl.wroblewski.helpdeskapp.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.wroblewski.helpdeskapp.models.Application;
 import pl.wroblewski.helpdeskapp.models.UserApplication;
 import pl.wroblewski.helpdeskapp.models.UserTicket;
-import pl.wroblewski.helpdeskapp.repositories.ApplicationRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserApplicationRepository;
 
 import java.util.List;
@@ -27,9 +25,8 @@ public class ApplicationService {
     //zamykanie wniosku(helpdesk, admin)
     //nadawanie sla do wniosku(helpdesk, admin)
     //przypisanie konkretnego pracownika do wniosku(może to zrobić tylko admin)
-
-    public List<UserApplication> getAllTickets() {
-        return (List<UserApplication>) userApplicationRepository.findAll();
+    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId) {
+        return userApplicationRepository.findByApplicationIdAndUserIdAndSlaId(applicationId, userId, slaId);
     }
 
 }

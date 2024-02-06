@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.wroblewski.helpdeskapp.dto.ApplicationDto;
 import pl.wroblewski.helpdeskapp.dto.TicketDto;
-import pl.wroblewski.helpdeskapp.models.Application;
-import pl.wroblewski.helpdeskapp.models.Ticket;
+import pl.wroblewski.helpdeskapp.dto.UserDto;
+import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserApplication;
 import pl.wroblewski.helpdeskapp.models.UserTicket;
 
@@ -19,6 +19,7 @@ public class ModelMapperConfiguration {
 
         addTicketMapping(modelMapper);
         addApplicationMapping(modelMapper);
+        addUserMapping(modelMapper);
 
         return modelMapper;
     }
@@ -29,7 +30,7 @@ public class ModelMapperConfiguration {
         mapping.addMapping(t -> t.getTicket().getSla().getSlaLevel(), TicketDto::setSla);
         mapping.addMapping(UserTicket::getOpeningDate, TicketDto::setOpeningDate);
         mapping.addMapping(t -> t.getTicket().getDescription(), TicketDto::setTitle);
-        mapping.addMapping(t -> t.getUser().getFirstName(), TicketDto::setFirstName);
+        mapping.addMapping(t -> t.getUser().getFullName(), TicketDto::setFullName);
     }
 
     private void addApplicationMapping(ModelMapper modelMapper) {
@@ -38,6 +39,11 @@ public class ModelMapperConfiguration {
         mapping.addMapping(a -> a.getApplication().getSla().getSlaLevel(), ApplicationDto::setSla);
         mapping.addMapping(a -> a.getApplication().getSubject(), ApplicationDto::setSubject);
         mapping.addMapping(UserApplication::getOpeningDate, ApplicationDto::setOpeningDate);
-        mapping.addMapping(a -> a.getUser().getFirstName(), ApplicationDto::setFirstName);
+        mapping.addMapping(a -> a.getUser().getFullName(), ApplicationDto::setFullName);
+    }
+
+    private void addUserMapping(ModelMapper modelMapper) {
+        var mapping = modelMapper.createTypeMap(User.class, UserDto.class);
+        mapping.addMapping(User::getFullName, UserDto::setFullName);
     }
 }

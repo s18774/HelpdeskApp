@@ -22,7 +22,7 @@ public class TicketController {
     private final ModelMapper modelMapper;
 
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId) {
         return ResponseEntity.ok(ticketService
                 .getTickets(ticketId, userId, slaId)

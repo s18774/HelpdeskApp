@@ -18,5 +18,5 @@ public class ApplicationDto {
     private Short sla;
     private String subject;
     private LocalDate openingDate;
-    private String firstName;
+    private String fullName;
 }

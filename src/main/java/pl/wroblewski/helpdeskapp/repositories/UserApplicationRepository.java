@@ -12,9 +12,9 @@ import java.util.List;
 public interface UserApplicationRepository extends CrudRepository<UserApplication, UserApplicationId> {
     //wyszukujemy wnioski konkretnego użytkownika
 
-    @Query("Select ua FROM UserApplication ua INNER JOIN Application a " +
+    @Query("Select ua FROM UserApplication ua INNER JOIN Application a ON a.applicationId = ua.id.applicationId " +
             "WHERE (:applicationId IS NULL OR a.applicationId = :applicationId) " +
             "AND (:userId IS NULL OR ua.id.userId = :userId) " +
             "AND (:slaId IS NULL OR a.sla.slaId = :slaId) ")
-    List<UserTicket> findByApplicationIdAndUserIdAndSlaId(@Param("applicationId") Integer applicationId, @Param("userId") Integer userId, @Param("slaId") Integer slaId);
+    List<UserApplication> findByApplicationIdAndUserIdAndSlaId(@Param("applicationId") Integer applicationId, @Param("userId") Integer userId, @Param("slaId") Integer slaId);
 }

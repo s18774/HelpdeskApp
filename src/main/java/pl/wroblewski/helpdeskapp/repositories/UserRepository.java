@@ -6,7 +6,7 @@ import pl.wroblewski.helpdeskapp.models.User;
 import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
-    Optional<User> findByLogin(String login);
+    Optional<User> findByUsername(String username);
     //wyszukiwanie po imieniu
     //wyszukiwanie po nazwisku
 

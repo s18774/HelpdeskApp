@@ -38,8 +38,8 @@ public class User {
     @Column(name = "employment_date")
     private LocalDate employmentDate;
 
-    @Column(name = "login", length = 20)
-    private String login;
+    @Column(name = "username", length = 20)
+    private String username;
 
     @Column(name = "password", length = 100)
     private String password;
@@ -59,4 +59,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    public String getFullName() {
+        return firstName + " " + secondName;
+    }
 }

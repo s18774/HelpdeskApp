@@ -14,5 +14,5 @@ public class TicketDto {
     private Short sla;
     private LocalDate openingDate;
     private String title;
-    private String firstName;
+    private String fullName;
 }

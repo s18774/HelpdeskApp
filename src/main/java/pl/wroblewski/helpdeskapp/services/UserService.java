@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.InvalidCredentialsException;
-import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
@@ -21,7 +20,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void authUser(String login, String password) throws InvalidCredentialsException {
-        User user = userRepository.findByLogin(login).orElseThrow(InvalidCredentialsException::new);
+        User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
         //dalsze porowanie hasla itp
         //sprawdzanie do jakiego role należy login
     }
@@ -29,11 +28,11 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = getUser(username);
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
     public User getUser(String username) {
-        return userRepository.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     public List<User> getAllUsers() {

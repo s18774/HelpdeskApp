@@ -20,7 +20,7 @@ public class JwtTokenUtil {
                 .setClaims(Map.of(
                         "id", user.getUserId(),
                         "role", user.getRole().getRoleId(),
-                        "username", user.getLogin(),
+                        "username", user.getUsername(),
                         "exp", System.currentTimeMillis() + 1000 * 60 * 30,
                         "iat", System.currentTimeMillis()))
                 .signWith(SignatureAlgorithm.HS512, secret)

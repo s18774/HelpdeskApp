@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,9 @@ public class ApplicationController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<ApplicationDto>> getAllTickets() {
+    public ResponseEntity<List<ApplicationDto>> getApplications(@PathParam("applicationId") Integer applicationId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId) {
         return ResponseEntity.ok(applicationService
-                .getAllTickets()
+                .getAllApplications(applicationId, userId, slaId)
                 .stream()
                 .map(t -> modelMapper.map(t, ApplicationDto.class))
                 .toList());
