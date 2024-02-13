@@ -21,6 +21,7 @@ public class JwtTokenUtil {
                         "id", user.getUserId(),
                         "role", user.getRole().getRoleId(),
                         "username", user.getUsername(),
+                        "fullName", user.getFullName(),
                         "exp", System.currentTimeMillis() + 1000 * 60 * 30,
                         "iat", System.currentTimeMillis()))
                 .signWith(SignatureAlgorithm.HS512, secret)
