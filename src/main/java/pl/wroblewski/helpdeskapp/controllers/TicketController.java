@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
+import pl.wroblewski.helpdeskapp.dto.TicketCreateDto;
 import pl.wroblewski.helpdeskapp.dto.TicketDto;
 import pl.wroblewski.helpdeskapp.models.Ticket;
 import pl.wroblewski.helpdeskapp.services.TicketService;
@@ -32,8 +33,8 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createTicket(@RequestBody Ticket ticket) {
-        ticketService.addTicket(ticket);
+    public ResponseEntity<BaseResponse> createTicket(@RequestBody TicketCreateDto ticket) {
+        ticketService.addTicket(modelMapper.map(ticket, Ticket.class));
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)
                 .message("Ticket created!")
