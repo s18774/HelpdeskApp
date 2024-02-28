@@ -34,7 +34,9 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<BaseResponse> createTicket(@RequestBody TicketCreateDto ticket) {
-        ticketService.addTicket(modelMapper.map(ticket, Ticket.class));
+        ticketService.addTicket(ticket.getSlaId(), ticket.getDepartmentId(),
+                ticket.getTitle(), ticket.getDescription(), ticket.getUserId(), 1); //TODO: dokonczyc
+
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)
                 .message("Ticket created!")

@@ -19,17 +19,21 @@ public class Ticket {
     @JoinColumn(name = "sla_id")
     private SLA sla;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Column(name = "ticket_number")
     private Integer ticketNumber;
-
-    @Column(name = "building_name", length = 3)
-    private String buildingName;
 
     @Column(name = "floor")
     private Integer floor;
 
     @Column(name = "room_number")
     private Integer roomNumber;
+
+    @Column(name = "titile")
+    private String title;
 
     @Column(name = "description", length = 300)
     private String description;
