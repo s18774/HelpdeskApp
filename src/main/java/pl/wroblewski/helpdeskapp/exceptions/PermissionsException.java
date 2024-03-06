@@ -1,7 +1,9 @@
 package pl.wroblewski.helpdeskapp.exceptions;
 
-public class PermissionsException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class PermissionsException extends BaseHttpException {
     public PermissionsException() {
-        super("Invalid permissions");
+        super(HttpStatus.FORBIDDEN, "Invalid permissions");
     }
 }

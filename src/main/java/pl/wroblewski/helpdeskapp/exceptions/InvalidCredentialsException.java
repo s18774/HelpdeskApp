@@ -1,7 +1,9 @@
 package pl.wroblewski.helpdeskapp.exceptions;
 
-public class InvalidCredentialsException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class InvalidCredentialsException extends BaseHttpException {
     public InvalidCredentialsException() {
-        super("Invalid user credentials");
+        super(HttpStatus.UNAUTHORIZED, "Invalid user credentials");
     }
 }

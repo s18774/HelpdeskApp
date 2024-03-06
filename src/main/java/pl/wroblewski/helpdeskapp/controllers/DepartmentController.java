@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/v1/department")
 @CrossOrigin("http://localhost:3000")
 @RequiredArgsConstructor
-public class DepartmentController {
+public class DepartmentController extends BaseController{
     private final DepartmentService departmentService;
     private final ModelMapper modelMapper;
 

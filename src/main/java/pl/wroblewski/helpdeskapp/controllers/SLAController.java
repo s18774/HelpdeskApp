@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/v1/sla")
 @CrossOrigin("http://localhost:3000")
 @RequiredArgsConstructor
-public class SLAController {
+public class SLAController extends BaseController {
     private final SLAService slaService;
     private final ModelMapper modelMapper;
 

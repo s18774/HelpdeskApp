@@ -11,7 +11,7 @@ import pl.wroblewski.helpdeskapp.utils.JwtTokenUtil;
 @RestController
 @RequestMapping("/api/v1/auth")
 @CrossOrigin("http://localhost:3000")
-public class AuthController {
+public class AuthController extends BaseController {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;

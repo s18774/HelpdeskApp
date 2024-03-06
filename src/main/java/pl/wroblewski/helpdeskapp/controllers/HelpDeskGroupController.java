@@ -8,7 +8,7 @@ import pl.wroblewski.helpdeskapp.services.HelpDeskGroupService;
 @RestController
 @RequestMapping("/api/v1/helpDeskGroup")
 @CrossOrigin("http://localhost:3000")
-public class HelpDeskGroupController {
+public class HelpDeskGroupController extends BaseController {
 
     private final HelpDeskGroupService helpDeskGroupService;
 

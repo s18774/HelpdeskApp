@@ -8,7 +8,7 @@ import pl.wroblewski.helpdeskapp.services.DeviceService;
 @RestController
 @RequestMapping("/api/v1/device")
 @CrossOrigin("http://localhost:3000")
-public class DeviceController {
+public class DeviceController extends BaseController {
 
     private final DeviceService deviceService;
 

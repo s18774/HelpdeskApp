@@ -40,7 +40,7 @@ public class TicketService {
     }
 
     @Transactional
-    public void addTicket(Integer slaId, Integer departmentId, String title,
+    public void addTicket(Integer slaId, Integer departmentId, Integer floor, String title,
                           String description, Integer userId, Integer userAuthorId) throws UserNotExistsException, PermissionsException, EntityNotExists {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -60,6 +60,7 @@ public class TicketService {
                 .description(description)
                 .department(department)
                 .sla(sla)
+                .floor(floor)
                 .build();
         ticketRepository.save(ticket);
 

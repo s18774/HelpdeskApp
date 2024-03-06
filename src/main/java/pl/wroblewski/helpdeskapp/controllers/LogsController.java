@@ -8,7 +8,7 @@ import pl.wroblewski.helpdeskapp.services.LogsService;
 @RestController
 @RequestMapping("/api/v1/logs")
 @CrossOrigin("http://localhost:3000")
-public class LogsController {
+public class LogsController extends BaseController {
 
     private final LogsService logsService;
 

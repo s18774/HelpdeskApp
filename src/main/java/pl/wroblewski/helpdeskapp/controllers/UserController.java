@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/v1/user")
 @CrossOrigin("http://localhost:3000")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController extends BaseController {
 
     private final UserService userService;
     private final ModelMapper modelMapper;

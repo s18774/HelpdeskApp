@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/v1/application")
 @CrossOrigin("http://localhost:3000")
 @RequiredArgsConstructor
-public class ApplicationController {
+public class ApplicationController extends BaseController {
     private final ApplicationService applicationService;
     private final ModelMapper modelMapper;
 

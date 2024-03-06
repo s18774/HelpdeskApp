@@ -1,7 +1,9 @@
 package pl.wroblewski.helpdeskapp.exceptions;
 
-public class UserNotExistsException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class UserNotExistsException extends BaseHttpException {
     public UserNotExistsException() {
-        super("User not exists");
+        super(HttpStatus.NOT_FOUND, "User not exists");
     }
 }

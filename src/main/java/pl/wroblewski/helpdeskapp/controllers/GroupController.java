@@ -8,7 +8,7 @@ import pl.wroblewski.helpdeskapp.services.GroupService;
 @RestController
 @RequestMapping("/api/v1/group")
 @CrossOrigin("http://localhost:3000")
-public class GroupController {
+public class GroupController extends BaseController {
 
     private final GroupService groupService;
 
