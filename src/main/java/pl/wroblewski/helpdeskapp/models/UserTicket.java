@@ -34,12 +34,12 @@ public class UserTicket {
     @JoinColumn(name = "helpdesk_id")
     private HelpDesk helpDeskId;
 
-    @Column(name = "opening_date")
+    @Column(name = "opening_date", nullable = true)
     private LocalDate openingDate;
 
     @Column(name = "closing_date", nullable = true)//może być puste
     private LocalDate closingDate;
 
-    @Column(name = "deadline_date")
+    @Column(name = "deadline_date", nullable = true)
     private LocalDate deadlineDate;
 }

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.SLA;
+import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserDeviceId;
 import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
 import pl.wroblewski.helpdeskapp.repositories.SLARepository;
@@ -73,13 +74,13 @@ public class HelpdeskAppApplication {
         }
 
         System.out.println(passwordEncoder.encode("test"));
-//        if(userRepository.findByLogin("tester").isEmpty()) {
-//            User user = User.builder()
-//                    .login("tester")
-//                    .password(passwordEncoder.encode("tester"))
-//                    .role(roleRepository.findById(2).get())
-//                    .build();
-//            userRepository.save(user);
-//        }
+        if(userRepository.findByUsername("tester").isEmpty()) {
+            User user = User.builder()
+                    .username("tester")
+                    .password(passwordEncoder.encode("tester"))
+                    .role(roleRepository.findById(2).get())
+                    .build();
+            userRepository.save(user);
+        }
     }
 }

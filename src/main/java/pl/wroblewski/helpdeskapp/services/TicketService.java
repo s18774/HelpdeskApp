@@ -53,7 +53,10 @@ public class TicketService {
         if (slaId != null) {
             sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
         }
-        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
+        Department department = null;
+        if(departmentId != null) {
+            department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
+        }
 
         Ticket ticket = Ticket.builder()
                 .title(title)
@@ -65,6 +68,7 @@ public class TicketService {
         ticketRepository.save(ticket);
 
         UserTicket userTicket = UserTicket.builder()
+                .id(new UserTicketId(user.getUserId(), ticket.getTicketId()))
                 .user(user)
                 .ticket(ticket)
                 .build();
