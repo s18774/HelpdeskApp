@@ -34,6 +34,10 @@ public class UserTicket {
     @JoinColumn(name = "helpdesk_id")
     private HelpDesk helpDeskId;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private HelpDesk groupId;
+
     @Column(name = "opening_date", nullable = true)
     private LocalDate openingDate;
 

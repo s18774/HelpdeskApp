@@ -49,10 +49,11 @@ public class TicketService {
             throw new PermissionsException();
         }
 
-        SLA sla = null;
-        if (slaId != null) {
-            sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
+        if (slaId == null) {
+            slaId = 1;
         }
+
+        SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
         Department department = null;
         if(departmentId != null) {
             department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));

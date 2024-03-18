@@ -78,6 +78,9 @@ public class HelpdeskAppApplication {
             User user = User.builder()
                     .username("tester")
                     .password(passwordEncoder.encode("tester"))
+                    .firstName("Jan")
+                    .secondName("Kowalski")
+                    .email("kowalski@gmail.com")
                     .role(roleRepository.findById(2).get())
                     .build();
             userRepository.save(user);
