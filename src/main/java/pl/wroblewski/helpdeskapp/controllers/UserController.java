@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.wroblewski.helpdeskapp.dto.UserDto;
+import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.List;
@@ -26,6 +27,12 @@ public class UserController extends BaseController {
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
         var users = userService.getAllUsers().stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/helpdesk")
+    public ResponseEntity<List<UserDto>> getAllHelpdesk() throws EntityNotExists {
+        var users = userService.getAllHelpdesk().stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
         return ResponseEntity.ok(users);
     }
 }

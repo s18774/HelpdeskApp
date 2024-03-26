@@ -46,7 +46,8 @@ public class TicketController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
 
         ticketService.addTicket(ticket.getSlaId(), ticket.getDepartmentId(), ticket.getFloor(),
-                ticket.getTitle(), ticket.getDescription(), ticket.getUserId(), author.getUserId());
+                ticket.getTitle(), ticket.getDescription(), ticket.getUserId(), author.getUserId(),
+                ticket.getHelpdeskId(), ticket.getGroupId());
 
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)

@@ -32,11 +32,11 @@ public class UserTicket {
 
     @ManyToOne
     @JoinColumn(name = "helpdesk_id")
-    private HelpDesk helpDeskId;
+    private User helpDeskId;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
-    private HelpDesk groupId;
+    private Group groupId;
 
     @Column(name = "opening_date", nullable = true)
     private LocalDate openingDate;

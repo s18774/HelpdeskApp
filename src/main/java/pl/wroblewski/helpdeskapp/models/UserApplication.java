@@ -32,7 +32,7 @@ public class UserApplication {
 
     @ManyToOne
     @JoinColumn(name = "helpdesk_id")
-    private HelpDesk helpDeskId;
+    private User helpDeskId;
 
     @Column(name = "opening_date")
     private LocalDate openingDate;

@@ -1,23 +1,26 @@
 package pl.wroblewski.helpdeskapp.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.InvalidCredentialsException;
+import pl.wroblewski.helpdeskapp.models.Role;
+import pl.wroblewski.helpdeskapp.models.RoleType;
 import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    public final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     public void authUser(String login, String password) throws InvalidCredentialsException {
         User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
@@ -37,5 +40,14 @@ public class UserService implements UserDetailsService {
 
     public List<User> getAllUsers() {
         return (List<User>) userRepository.findAll();
+    }
+
+    public List<User> getAllHelpdesk() throws EntityNotExists {
+        Role helpdeskRole = roleRepository.findById(RoleType.HELP_DESK.ordinal()).orElseThrow(() -> new EntityNotExists(Role.class));
+        Role adminRole = roleRepository.findById(RoleType.ADMIN.ordinal()).orElseThrow(() -> new EntityNotExists(Role.class));
+
+        ArrayList<User> users = new ArrayList<>(userRepository.findAllByRole(helpdeskRole));
+        users.addAll(userRepository.findAllByRole(adminRole));
+        return users;
     }
 }

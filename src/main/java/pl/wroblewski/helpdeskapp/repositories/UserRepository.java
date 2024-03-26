@@ -1,8 +1,10 @@
 package pl.wroblewski.helpdeskapp.repositories;
 
 import org.springframework.data.repository.CrudRepository;
+import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
@@ -12,4 +14,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     //edycja danych (administrator/lider)
     //tworzenie/usuwanie konta użytkownika(admin/lider)
+    List<User> findAllByRole(Role role);
 }

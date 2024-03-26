@@ -33,6 +33,7 @@ public class TicketService {
     private final UserRepository userRepository;
     private final SLARepository slaRepository;
     private final DepartmentRepository departmentRepository;
+    private final GroupRepository groupRepository;
 
 
     public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId) {
@@ -41,7 +42,8 @@ public class TicketService {
 
     @Transactional
     public void addTicket(Integer slaId, Integer departmentId, Integer floor, String title,
-                          String description, Integer userId, Integer userAuthorId) throws UserNotExistsException, PermissionsException, EntityNotExists {
+                          String description, Integer userId, Integer userAuthorId,
+                          Integer helpdeskId, Integer groupId) throws UserNotExistsException, PermissionsException, EntityNotExists {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
@@ -59,6 +61,16 @@ public class TicketService {
             department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         }
 
+        User helpdesk = null;
+        if(helpdeskId != null) {
+            helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
+        }
+
+        Group group = null;
+        if(groupId != null) {
+            group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        }
+
         Ticket ticket = Ticket.builder()
                 .title(title)
                 .description(description)
@@ -72,6 +84,8 @@ public class TicketService {
                 .id(new UserTicketId(user.getUserId(), ticket.getTicketId()))
                 .user(user)
                 .ticket(ticket)
+                .groupId(group)
+                .helpDeskId(helpdesk)
                 .build();
         userTicketRepository.save(userTicket);
     }
