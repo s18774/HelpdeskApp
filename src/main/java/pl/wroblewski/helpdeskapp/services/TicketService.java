@@ -47,9 +47,7 @@ public class TicketService {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if (!userId.equals(userAuthorId) && !userHasPermissions(userAuthor)) {
-            throw new PermissionsException();
-        }
+        userHasPermissions(user, userAuthor, slaId, helpdeskId, groupId);
 
         if (slaId == null) {
             slaId = 1;
@@ -57,17 +55,17 @@ public class TicketService {
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
         Department department = null;
-        if(departmentId != null) {
+        if (departmentId != null) {
             department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         }
 
         User helpdesk = null;
-        if(helpdeskId != null) {
+        if (helpdeskId != null) {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
         }
 
         Group group = null;
-        if(groupId != null) {
+        if (groupId != null) {
             group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
 
@@ -90,8 +88,28 @@ public class TicketService {
         userTicketRepository.save(userTicket);
     }
 
-    private boolean userHasPermissions(User user) {
-        List<String> roles = List.of(RoleType.ADMIN.getName(), RoleType.HELP_DESK.getName());
-        return roles.contains(user.getRole().getRoleName());
+    private boolean isAdmin(User user) {
+        return user.getRole().getRoleName().equals(RoleType.ADMIN.getName());
+    }
+
+    private boolean isHelpdesk(User user) {
+        return user.getRole().getRoleName().equals(RoleType.HELP_DESK.getName());
+    }
+
+    private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
+            throws PermissionsException {
+
+        if (!isAdmin(userAuthor) && !isHelpdesk(userAuthor)) {
+            if (user.getUserId() != userAuthor.getUserId() || slaId != null) {
+                throw new PermissionsException();
+            }
+        }
+        if(!isAdmin(userAuthor)) {
+            if(helpdeskId != null || groupId != null) {
+                throw new PermissionsException();
+            }
+        }
+
     }
 }
+
