@@ -3,10 +3,7 @@ package pl.wroblewski.helpdeskapp.configuration;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.wroblewski.helpdeskapp.dto.ApplicationDto;
-import pl.wroblewski.helpdeskapp.dto.TicketCreateDto;
-import pl.wroblewski.helpdeskapp.dto.TicketDto;
-import pl.wroblewski.helpdeskapp.dto.UserDto;
+import pl.wroblewski.helpdeskapp.dto.*;
 import pl.wroblewski.helpdeskapp.models.Ticket;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserApplication;
@@ -27,12 +24,18 @@ public class ModelMapperConfiguration {
     }
 
     private void addTicketMapping(ModelMapper modelMapper) {
-        var mapping = modelMapper.createTypeMap(UserTicket.class, TicketDto.class);
-        mapping.addMapping(t -> t.getTicket().getTicketId(), TicketDto::setTicketId);
-        mapping.addMapping(t -> t.getTicket().getSla().getSlaLevel(), TicketDto::setSla);
-        mapping.addMapping(UserTicket::getOpeningDate, TicketDto::setOpeningDate);
-        mapping.addMapping(t -> t.getTicket().getDescription(), TicketDto::setTitle);
-        mapping.addMapping(t -> t.getUser().getFullName(), TicketDto::setFullName);
+        var ticketMapping = modelMapper.createTypeMap(UserTicket.class, TicketDto.class);
+        ticketMapping.addMapping(t -> t.getTicket().getTicketId(), TicketDto::setTicketId);
+        ticketMapping.addMapping(t -> t.getTicket().getSla().getSlaLevel(), TicketDto::setSla);
+        ticketMapping.addMapping(UserTicket::getOpeningDate, TicketDto::setOpeningDate);
+        ticketMapping.addMapping(t -> t.getTicket().getDescription(), TicketDto::setTitle);
+        ticketMapping.addMapping(t -> t.getUser().getFullName(), TicketDto::setFullName);
+
+        var jobMapping = modelMapper.createTypeMap(UserTicket.class, JobDto.class);
+        jobMapping.addMapping(t -> "ticket", JobDto::setJobType);
+        jobMapping.addMapping(UserTicket::getId, JobDto::setId);
+        jobMapping.addMapping(t -> t.getUser().getFullName(), JobDto::setFullName);
+        jobMapping.addMapping(t -> t.getTicket().getSla().getSlaLevel(), JobDto::setSla);
     }
 
     private void addApplicationMapping(ModelMapper modelMapper) {
@@ -42,6 +45,12 @@ public class ModelMapperConfiguration {
         mapping.addMapping(a -> a.getApplication().getSubject(), ApplicationDto::setSubject);
         mapping.addMapping(UserApplication::getOpeningDate, ApplicationDto::setOpeningDate);
         mapping.addMapping(a -> a.getUser().getFullName(), ApplicationDto::setFullName);
+
+        var jobMapping = modelMapper.createTypeMap(UserApplication.class, JobDto.class);
+        jobMapping.addMapping(t -> "application", JobDto::setJobType);
+        jobMapping.addMapping(UserApplication::getId, JobDto::setId);
+        jobMapping.addMapping(t -> t.getUser().getFullName(), JobDto::setFullName);
+        jobMapping.addMapping(t -> t.getApplication().getSla().getSlaLevel(), JobDto::setSla);
     }
 
     private void addUserMapping(ModelMapper modelMapper) {

@@ -34,6 +34,10 @@ public class UserApplication {
     @JoinColumn(name = "helpdesk_id")
     private User helpDeskId;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group groupId;
+
     @Column(name = "opening_date")
     private LocalDate openingDate;
 

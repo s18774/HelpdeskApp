@@ -88,23 +88,15 @@ public class TicketService {
         userTicketRepository.save(userTicket);
     }
 
-    private boolean isAdmin(User user) {
-        return user.getRole().getRoleName().equals(RoleType.ADMIN.getName());
-    }
-
-    private boolean isHelpdesk(User user) {
-        return user.getRole().getRoleName().equals(RoleType.HELP_DESK.getName());
-    }
-
     private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
             throws PermissionsException {
 
-        if (!isAdmin(userAuthor) && !isHelpdesk(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             if (user.getUserId() != userAuthor.getUserId() || slaId != null) {
                 throw new PermissionsException();
             }
         }
-        if(!isAdmin(userAuthor)) {
+        if(!RoleType.isAdmin(userAuthor)) {
             if(helpdeskId != null || groupId != null) {
                 throw new PermissionsException();
             }
