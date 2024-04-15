@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class JobDto {
     private String jobType;
-    private Integer id;
+    private Integer jobId;
     private String fullName;
     private Integer sla;
 }
