@@ -18,5 +18,9 @@ public enum RoleType {
         return user.getRole().getRoleName().equals(RoleType.HELP_DESK.getName());
     }
 
+    public static boolean isUser(User user) {
+        return user.getRole().getRoleName().equals(RoleType.USER.getName());
+    }
+
     private final String name;
 }

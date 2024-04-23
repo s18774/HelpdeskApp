@@ -34,7 +34,12 @@ public class ApplicationService {
     //zamykanie wniosku(helpdesk, admin)
     //nadawanie sla do wniosku(helpdesk, admin)
     //przypisanie konkretnego pracownika do wniosku(może to zrobić tylko admin)
-    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId) {
+    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId, Integer userAuthorId) throws UserNotExistsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if(RoleType.isUser(userAuthor)) {
+            userId = userAuthorId;
+        }
         return userApplicationRepository.findByApplicationIdAndUserIdAndSlaId(applicationId, userId, slaId);
     }
 

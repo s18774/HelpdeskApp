@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.InvalidCredentialsException;
+import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.RoleType;
 import pl.wroblewski.helpdeskapp.models.User;
@@ -38,7 +39,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(Integer userAuthorId) throws UserNotExistsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if(RoleType.isUser(userAuthor)) {
+            return List.of(userAuthor);
+        }
         return (List<User>) userRepository.findAll();
     }
 

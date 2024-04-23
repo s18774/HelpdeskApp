@@ -36,7 +36,12 @@ public class TicketService {
     private final GroupRepository groupRepository;
 
 
-    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId) {
+    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if(RoleType.isUser(userAuthor)) {
+            userId = userAuthorId;
+        }
         return (List<UserTicket>) userTicketRepository.findByTicketIdAndUserIdAndSlaId(ticketId, userId, slaId);
     }
 
@@ -101,7 +106,6 @@ public class TicketService {
                 throw new PermissionsException();
             }
         }
-
     }
 }
 

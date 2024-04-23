@@ -33,9 +33,11 @@ public class TicketController extends BaseController {
 
 
     @GetMapping
-    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId) {
+    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
         return ResponseEntity.ok(ticketService
-                .getTickets(ticketId, userId, slaId)
+                .getTickets(ticketId, userId, slaId, author.getUserId())
                 .stream()
                 .map(t -> modelMapper.map(t, TicketDto.class))
                 .toList());
