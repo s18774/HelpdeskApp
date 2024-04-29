@@ -3,13 +3,11 @@ package pl.wroblewski.helpdeskapp.configuration;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.wroblewski.helpdeskapp.dto.*;
-import pl.wroblewski.helpdeskapp.models.Ticket;
-import pl.wroblewski.helpdeskapp.models.User;
-import pl.wroblewski.helpdeskapp.models.UserApplication;
-import pl.wroblewski.helpdeskapp.models.UserTicket;
+import pl.wroblewski.helpdeskapp.models.*;
 
 @Configuration
 
@@ -23,11 +21,12 @@ public class ModelMapperConfiguration {
         addTicketMapping(modelMapper);
         addApplicationMapping(modelMapper);
         addUserMapping(modelMapper);
+        addDeviceMapping(modelMapper);
 
         return modelMapper;
     }
 
-    private void addTicketMapping(ModelMapper modelMapper) {
+    public void addTicketMapping(ModelMapper modelMapper) {
         modelMapper.createTypeMap(UserTicket.class, TicketDto.class)
                 .addMappings(mapper -> {
                     mapper.map(t -> t.getTicket().getTicketId(), TicketDto::setTicketId);
@@ -48,7 +47,7 @@ public class ModelMapperConfiguration {
 
     }
 
-    private void addApplicationMapping(ModelMapper modelMapper) {
+    public void addApplicationMapping(ModelMapper modelMapper) {
         modelMapper.createTypeMap(UserApplication.class, ApplicationDto.class)
                 .addMappings(mapper -> {
                     mapper.map(a -> a.getApplication().getApplicationId(), ApplicationDto::setApplicationId);
@@ -68,8 +67,13 @@ public class ModelMapperConfiguration {
                 });
     }
 
-    private void addUserMapping(ModelMapper modelMapper) {
+    public void addUserMapping(ModelMapper modelMapper) {
         var mapping = modelMapper.createTypeMap(User.class, UserDto.class);
         mapping.addMapping(User::getFullName, UserDto::setFullName);
+    }
+
+    public void addDeviceMapping(ModelMapper modelMapper) {
+        var mapping = modelMapper.createTypeMap(UserDevice.class, DeviceDto.class);
+        mapping.addMapping(d -> d.getUser().getFullName(), DeviceDto::setFullName);
     }
 }

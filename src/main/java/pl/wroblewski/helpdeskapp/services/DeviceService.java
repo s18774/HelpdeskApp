@@ -6,7 +6,6 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.RoleType;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserDevice;
-import pl.wroblewski.helpdeskapp.repositories.DeviceRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
@@ -22,7 +21,7 @@ public class DeviceService {
     private final UserDeviceRepository deviceRepository;
     private final UserRepository userRepository;
 
-    public List<UserDevice> getDevices(Integer deviceTypeId, String brand, String model, String serialNumber, Integer userId, Integer userAuthorId) throws UserNotExistsException {
+    public List<UserDevice> getAllDevices(Integer deviceTypeId, String brand, String model, String serialNumber, Integer userId, Integer userAuthorId) throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if(RoleType.isUser(userAuthor)) {
             userId = userAuthorId;

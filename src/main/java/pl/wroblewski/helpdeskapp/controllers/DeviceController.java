@@ -1,18 +1,47 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
+import jakarta.websocket.server.PathParam;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.wroblewski.helpdeskapp.dto.DeviceDto;
+import pl.wroblewski.helpdeskapp.dto.TicketDto;
+import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
+import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
+import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.services.DeviceService;
+import pl.wroblewski.helpdeskapp.services.UserService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/device")
 @CrossOrigin("http://localhost:3000")
+@RequiredArgsConstructor
 public class DeviceController extends BaseController {
-
     private final DeviceService deviceService;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
-    public DeviceController(DeviceService deviceService) {
-        this.deviceService = deviceService;
+    @GetMapping
+    public ResponseEntity<List<DeviceDto>> getTickets(@PathParam("deviceTypeId") Integer deviceTypeId,
+                                                      @PathParam("brand") String brand,
+                                                      @PathParam("model") String model,
+                                                      @PathParam("serialNumber") String serialNumber,
+                                                      @PathParam("userId") Integer userId,
+                                                      @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        return ResponseEntity.ok(deviceService
+                .getAllDevices(deviceTypeId, brand, model, serialNumber, userId, author.getUserId())
+                .stream()
+                .map(d -> modelMapper.map(d, DeviceDto.class))
+                .toList());
     }
 }

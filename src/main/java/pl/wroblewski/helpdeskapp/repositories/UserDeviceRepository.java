@@ -12,10 +12,12 @@ import java.util.List;
 public interface UserDeviceRepository extends CrudRepository<UserDevice, UserDeviceId> {
     //możemy wpisać device_id i znaleźć do kogo należy urządzenie lub wpisać user_id i sprawdzić listę wszystkich urządzeń na stanie usera
 
-    @Query("Select ut FROM UserTicket ut INNER JOIN Ticket t ON t.ticketId=ut.id.ticketId " +
-            "WHERE (:ticketId IS NULL OR t.ticketId = :ticketId) " +
-            "AND (:userId IS NULL OR ut.id.userId = :userId) " +
-            "AND (:slaId IS NULL OR t.sla.slaId = :slaId) ") //TODO: przeobic zapytanie pod te parametry na dole
+    @Query("Select ud FROM UserDevice ud INNER JOIN Device d ON d.deviceId=ud.id.deviceId " +
+            "WHERE (:deviceTypeId IS NULL OR d.deviceType.deviceTypeId = :deviceTypeId) " +
+            "AND (:brand IS NULL OR d.brand = :brand) " +
+            "AND (:model IS NULL OR d.model = :model) " +
+            "AND (:serialNumber IS NULL OR d.model = :serialNumber) " +
+            "AND (:userId IS NULL OR ud.id.deviceId = :userId) ")
     public List<UserDevice> findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(@Param("deviceTypeId") Integer deviceTypeId,
                                                                                        @Param("brand") String brand,
                                                                                        @Param("model") String model,
