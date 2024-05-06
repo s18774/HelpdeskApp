@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import pl.wroblewski.helpdeskapp.dto.*;
 import pl.wroblewski.helpdeskapp.models.*;
 
+import java.util.Optional;
+
 @Configuration
 
 public class ModelMapperConfiguration {
@@ -73,7 +75,12 @@ public class ModelMapperConfiguration {
     }
 
     public void addDeviceMapping(ModelMapper modelMapper) {
-        var mapping = modelMapper.createTypeMap(UserDevice.class, DeviceDto.class);
-        mapping.addMapping(d -> d.getUser().getFullName(), DeviceDto::setFullName);
+        modelMapper.createTypeMap(Device.class, DeviceDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(Device::getModel, DeviceDto::setModel);
+                    mapper.map(Device::getBrand, DeviceDto::setBrand);
+                    mapper.map(d -> d.getDeviceType().getTypeDescription(), DeviceDto::setDeviceTypeName);
+                    mapper.map(Device::getSerialNumber, DeviceDto::setSerialNumber);
+                });
     }
 }

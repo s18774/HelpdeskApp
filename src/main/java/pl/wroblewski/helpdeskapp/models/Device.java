@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity(name = "Device")
 @Getter
@@ -39,4 +40,8 @@ public class Device {
 
     @Column(name = "isGuarantee")
     private Byte isGuarantee;//1 means yes, 0 means no
+
+    @OneToMany
+    @JoinColumn(name="device_id")
+    private Set<UserDevice> userDevices;
 }
