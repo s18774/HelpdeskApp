@@ -31,7 +31,7 @@ public class DeviceController extends BaseController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<DeviceDto>> getTickets(@PathParam("deviceTypeId") Integer deviceTypeId,
+    public ResponseEntity<List<DeviceDto>> getDevices(@PathParam("deviceTypeId") Integer deviceTypeId,
                                                       @PathParam("brand") String brand,
                                                       @PathParam("model") String model,
                                                       @PathParam("serialNumber") String serialNumber,
