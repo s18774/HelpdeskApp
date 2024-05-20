@@ -6,13 +6,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.wroblewski.helpdeskapp.dto.DeviceCreateDto;
 import pl.wroblewski.helpdeskapp.dto.DeviceDto;
 import pl.wroblewski.helpdeskapp.dto.DeviceTypeDto;
 import pl.wroblewski.helpdeskapp.dto.TicketDto;
+import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
@@ -61,5 +60,16 @@ public class DeviceController extends BaseController {
                 .stream()
                 .map(t -> modelMapper.map(t, DeviceTypeDto.class))
                 .toList());
+    }
+
+    @PostMapping
+    public ResponseEntity<DeviceDto> createDevice(@RequestBody DeviceCreateDto deviceCreateDto,
+                                                  @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+        var newDevice = deviceService.createDevice(deviceCreateDto.getDeviceTypeId(), deviceCreateDto.getBrand(),
+                deviceCreateDto.getModel(), deviceCreateDto.getSerialNumber(), deviceCreateDto.getInventoryNumber(),
+                deviceCreateDto.getGuarantee(), author.getUserId());
+        return ResponseEntity.ok(modelMapper.map(newDevice, DeviceDto.class));
     }
 }

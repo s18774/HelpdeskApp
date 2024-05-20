@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.wroblewski.helpdeskapp.dto.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.UserDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -32,6 +33,13 @@ public class UserController extends BaseController {
     public ResponseEntity<List<UserDto>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
         User author = userService.getUser(userDetails.getUsername());
         var users = userService.getAllUsers(author.getUserId()).stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/details")
+    public ResponseEntity<List<UserDetailsDto>> getAllDetailedUsers(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+        User author = userService.getUser(userDetails.getUsername());
+        var users = userService.getAllUsers(author.getUserId()).stream().map(user -> modelMapper.map(user, UserDetailsDto.class)).toList();
         return ResponseEntity.ok(users);
     }
 
