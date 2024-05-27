@@ -60,6 +60,10 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
+
     public String getFullName() {
         return firstName + " " + secondName;
     }

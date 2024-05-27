@@ -49,6 +49,15 @@ public class UserService implements UserDetailsService {
         return (List<User>) userRepository.findAll();
     }
 
+    public List<User> getAllUsersDetails(String firstName, String secondName, String positionName, String groupName, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if(!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+        return (List<User>) userRepository.findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(firstName, secondName, positionName, groupName);
+    }
+
     public List<User> getAllHelpdesk() throws EntityNotExists {
         Role helpdeskRole = roleRepository.findById(RoleType.HELP_DESK.ordinal()).orElseThrow(() -> new EntityNotExists(Role.class));
         Role adminRole = roleRepository.findById(RoleType.ADMIN.ordinal()).orElseThrow(() -> new EntityNotExists(Role.class));

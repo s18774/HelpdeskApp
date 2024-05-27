@@ -1,6 +1,9 @@
 package pl.wroblewski.helpdeskapp.repositories;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+import pl.wroblewski.helpdeskapp.models.Device;
 import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.User;
 
@@ -15,4 +18,14 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     //edycja danych (administrator/lider)
     //tworzenie/usuwanie konta użytkownika(admin/lider)
     List<User> findAllByRole(Role role);
+
+    @Query("Select u FROM _user u LEFT JOIN _Group g ON u.group.groupId=g.groupId" +
+            "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
+            "AND (:secondName IS NULL OR u.secondName LIKE %:secondName%) " +
+            "AND (:positionName IS NULL OR u.positionName LIKE %:positionName%) " +
+            "AND (:groupName IS NULL OR u.group.groupName LIKE %:groupName%) ")
+    List<User> findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(@Param("firstName") String firstName,
+                                                                          @Param("secondName") String secondName,
+                                                                          @Param("positionName") String positionName,
+                                                                          @Param("groupName") String groupName);
 }

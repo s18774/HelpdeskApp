@@ -72,6 +72,15 @@ public class ModelMapperConfiguration {
     public void addUserMapping(ModelMapper modelMapper) {
         var mapping = modelMapper.createTypeMap(User.class, UserDto.class);
         mapping.addMapping(User::getFullName, UserDto::setFullName);
+
+        modelMapper.createTypeMap(User.class, UserDetailsDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(u -> u.getGroup().getGroupName(), UserDetailsDto::setGroupName);
+                    mapper.map(User::getUserId, UserDetailsDto::setUserId);
+                    mapper.map(User::getPositionName, UserDetailsDto::setPositionName);
+                    mapper.map(User::getFirstName, UserDetailsDto::setFirstName);
+                    mapper.map(User::getSecondName, UserDetailsDto::setSecondName);
+                });
     }
 
     public void addDeviceMapping(ModelMapper modelMapper) {

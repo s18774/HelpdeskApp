@@ -1,6 +1,7 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.wroblewski.helpdeskapp.dto.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.UserDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
+import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.services.UserService;
@@ -37,9 +39,13 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<List<UserDetailsDto>> getAllDetailedUsers(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+    public ResponseEntity<List<UserDetailsDto>> getAllDetailedUsers(@PathParam("firstName") String firstName,
+                                                                    @PathParam("secondName") String secondName,
+                                                                    @PathParam("positionName") String positionName,
+                                                                    @PathParam("groupName") String groupName,
+                                                                    @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
-        var users = userService.getAllUsers(author.getUserId()).stream().map(user -> modelMapper.map(user, UserDetailsDto.class)).toList();
+        var users = userService.getAllUsersDetails(firstName, secondName, positionName, groupName, author.getUserId()).stream().map(user -> modelMapper.map(user, UserDetailsDto.class)).toList();
         return ResponseEntity.ok(users);
     }
 
