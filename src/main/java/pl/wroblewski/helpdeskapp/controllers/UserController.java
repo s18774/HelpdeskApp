@@ -1,18 +1,17 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pl.wroblewski.helpdeskapp.dto.UserDetailsDto;
-import pl.wroblewski.helpdeskapp.dto.UserDto;
+import org.springframework.web.bind.annotation.*;
+import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
+import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserCreateDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -53,5 +52,14 @@ public class UserController extends BaseController {
     public ResponseEntity<List<UserDto>> getAllHelpdesk() throws EntityNotExists {
         var users = userService.getAllHelpdesk().stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
         return ResponseEntity.ok(users);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@RequestBody UserCreateDto userCreateDto,
+                                                  @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+        var newUser = userService.createUser(userCreateDto.getFirstname(), userCreateDto.getSecondname(), userCreateDto.getPosition(), userCreateDto.getGroupId(), author.getUserId());
+        return ResponseEntity.ok(modelMapper.map(newUser, UserDto.class));
     }
 }

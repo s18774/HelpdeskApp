@@ -1,4 +1,4 @@
-package pl.wroblewski.helpdeskapp.dto;
+package pl.wroblewski.helpdeskapp.dto.application;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,13 +7,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TicketCreateDto {
+public class ApplicationCreateDto {
     private Integer slaId;
-    private Integer departmentId;
     private Integer userId;
     private Integer helpdeskId;
     private Integer groupId;
-    private Integer floor;
     private String title;
     private String description;
 }

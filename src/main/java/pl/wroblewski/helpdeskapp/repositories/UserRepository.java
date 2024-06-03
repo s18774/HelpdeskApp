@@ -19,7 +19,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     //tworzenie/usuwanie konta użytkownika(admin/lider)
     List<User> findAllByRole(Role role);
 
-    @Query("Select u FROM _user u LEFT JOIN _Group g ON u.group.groupId=g.groupId" +
+    @Query("Select u FROM _user u LEFT JOIN _Group g ON u.group.groupId=g.groupId " +
             "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
             "AND (:secondName IS NULL OR u.secondName LIKE %:secondName%) " +
             "AND (:positionName IS NULL OR u.positionName LIKE %:positionName%) " +
@@ -28,4 +28,12 @@ public interface UserRepository extends CrudRepository<User, Integer> {
                                                                           @Param("secondName") String secondName,
                                                                           @Param("positionName") String positionName,
                                                                           @Param("groupName") String groupName);
+
+    @Query("Select u FROM _user u  " +
+            "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
+            "AND (:secondName IS NULL OR u.secondName LIKE %:secondName%) " +
+            "AND (:positionName IS NULL OR u.positionName LIKE %:positionName%)")
+    List<User> findAllByFirstnameAndSecondNameAndPositionName(@Param("firstName") String firstName,
+                                                              @Param("secondName") String secondName,
+                                                              @Param("positionName") String positionName);
 }

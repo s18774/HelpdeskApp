@@ -1,4 +1,4 @@
-package pl.wroblewski.helpdeskapp.dto;
+package pl.wroblewski.helpdeskapp.dto.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

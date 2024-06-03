@@ -1,4 +1,4 @@
-package pl.wroblewski.helpdeskapp.dto;
+package pl.wroblewski.helpdeskapp.dto.application;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;

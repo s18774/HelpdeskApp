@@ -2,14 +2,15 @@ package pl.wroblewski.helpdeskapp.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.wroblewski.helpdeskapp.dto.*;
+import pl.wroblewski.helpdeskapp.dto.application.ApplicationDto;
+import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserDto;
 import pl.wroblewski.helpdeskapp.models.*;
-
-import java.util.Optional;
 
 @Configuration
 

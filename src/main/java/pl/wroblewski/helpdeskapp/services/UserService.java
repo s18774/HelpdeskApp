@@ -9,12 +9,13 @@ import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.InvalidCredentialsException;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
-import pl.wroblewski.helpdeskapp.models.Role;
-import pl.wroblewski.helpdeskapp.models.RoleType;
-import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.models.*;
+import pl.wroblewski.helpdeskapp.repositories.GroupRepository;
 import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final GroupRepository groupRepository;
 
     public void authUser(String login, String password) throws InvalidCredentialsException {
         User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
@@ -43,7 +45,7 @@ public class UserService implements UserDetailsService {
     public List<User> getAllUsers(Integer userAuthorId) throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if(RoleType.isUser(userAuthor)) {
+        if (RoleType.isUser(userAuthor)) {
             return List.of(userAuthor);
         }
         return (List<User>) userRepository.findAll();
@@ -52,10 +54,14 @@ public class UserService implements UserDetailsService {
     public List<User> getAllUsersDetails(String firstName, String secondName, String positionName, String groupName, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if(!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
-        return (List<User>) userRepository.findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(firstName, secondName, positionName, groupName);
+        if (groupName != null && !groupName.isEmpty()) {
+            return userRepository.findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(firstName, secondName, positionName, groupName);
+        } else {
+            return userRepository.findAllByFirstnameAndSecondNameAndPositionName(firstName, secondName, positionName);
+        }
     }
 
     public List<User> getAllHelpdesk() throws EntityNotExists {
@@ -65,5 +71,26 @@ public class UserService implements UserDetailsService {
         ArrayList<User> users = new ArrayList<>(userRepository.findAllByRole(helpdeskRole));
         users.addAll(userRepository.findAllByRole(adminRole));
         return users;
+    }
+
+    public User createUser(String firstname, String secondname, String position, Integer groupId, Integer userAuthorId)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        if (!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        Group group = null;
+        if (groupId != null) {
+            group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        }
+
+        return userRepository.save(User.builder()
+                .firstName(firstname)
+                .secondName(secondname)
+                .positionName(position)
+                .group(group)
+                .employmentDate(LocalDate.now())
+                .build());
     }
 }
