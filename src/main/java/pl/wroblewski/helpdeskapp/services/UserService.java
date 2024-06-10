@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.InvalidCredentialsException;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.*;
+import pl.wroblewski.helpdeskapp.repositories.DepartmentRepository;
 import pl.wroblewski.helpdeskapp.repositories.GroupRepository;
 import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
@@ -25,6 +27,8 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final GroupRepository groupRepository;
+    private final DepartmentRepository departmentRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void authUser(String login, String password) throws InvalidCredentialsException {
         User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
@@ -73,7 +77,7 @@ public class UserService implements UserDetailsService {
         return users;
     }
 
-    public User createUser(String firstname, String secondname, String position, Integer groupId, Integer userAuthorId)
+    public User createUser(User newUser, Integer groupId, Integer departmentId, Integer supervisorId, Integer roleId, Integer userAuthorId)
             throws UserNotExistsException, PermissionsException, EntityNotExists {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if (!RoleType.isAdmin(userAuthor)) {
@@ -85,12 +89,25 @@ public class UserService implements UserDetailsService {
             group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
 
-        return userRepository.save(User.builder()
-                .firstName(firstname)
-                .secondName(secondname)
-                .positionName(position)
-                .group(group)
-                .employmentDate(LocalDate.now())
-                .build());
+        User supervisor = null;
+        if(supervisorId != null) {
+            supervisor = userRepository.findById(supervisorId).orElseThrow(() -> new EntityNotExists(User.class));
+        }
+
+        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
+
+        newUser.setGroup(group);
+        newUser.setEmploymentDate(LocalDate.now());
+        newUser.setDepartmentId(department);
+        newUser.setSupervisor(supervisor);
+        newUser.setRole(role);
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+
+        return userRepository.save(newUser);
+    }
+
+    public List<Role> getAllRoles() {
+        return (List<Role>)roleRepository.findAll();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
+import pl.wroblewski.helpdeskapp.dto.role.RoleDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserCreateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDto;
@@ -59,7 +60,17 @@ public class UserController extends BaseController {
                                                   @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
-        var newUser = userService.createUser(userCreateDto.getFirstname(), userCreateDto.getSecondname(), userCreateDto.getPosition(), userCreateDto.getGroupId(), author.getUserId());
+        User newUser = modelMapper.map(userCreateDto, User.class);
+        newUser = userService.createUser(newUser, userCreateDto.getGroupId(), userCreateDto.getDepartmentId(), userCreateDto.getUserId(), userCreateDto.getRoleId(), author.getUserId());
         return ResponseEntity.ok(modelMapper.map(newUser, UserDto.class));
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<RoleDto>> getAllRoles(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+        var roles = userService.getAllRoles()
+                .stream()
+                .map(role -> modelMapper.map(role, RoleDto.class))
+                .toList();
+        return ResponseEntity.ok(roles);
     }
 }
