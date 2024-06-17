@@ -37,6 +37,7 @@ public class ModelMapperConfiguration {
                     mapper.map(UserTicket::getOpeningDate, TicketDto::setOpeningDate);
                     mapper.map(t -> t.getTicket().getDescription(), TicketDto::setTitle);
                     mapper.map(t -> t.getUser().getFullName(), TicketDto::setFullName);
+                    mapper.map(t -> t.getStageId().getStageId(), TicketDto::setStageId);
                 });
 
 

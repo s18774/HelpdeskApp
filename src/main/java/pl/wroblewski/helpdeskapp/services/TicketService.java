@@ -12,6 +12,7 @@ import pl.wroblewski.helpdeskapp.repositories.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class TicketService {
     private final SLARepository slaRepository;
     private final DepartmentRepository departmentRepository;
     private final GroupRepository groupRepository;
+    private final StageRepository stageRepository;
 
 
     public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
@@ -74,6 +76,8 @@ public class TicketService {
             group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
 
+        Stage stage = stageRepository.findById(1).orElseThrow(() -> new EntityNotExists(Stage.class));
+
         Ticket ticket = Ticket.builder()
                 .title(title)
                 .description(description)
@@ -89,8 +93,19 @@ public class TicketService {
                 .ticket(ticket)
                 .groupId(group)
                 .helpDeskId(helpdesk)
+                .stageId(stage)
                 .build();
         userTicketRepository.save(userTicket);
+    }
+
+    public UserTicket getTicket(Integer ticketId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+
+        if(RoleType.isUser(userAuthor) && !Objects.equals(userTicket.getId().getUserId(), userAuthorId)) {
+            throw new PermissionsException();
+        }
+        return userTicket;
     }
 
     private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)

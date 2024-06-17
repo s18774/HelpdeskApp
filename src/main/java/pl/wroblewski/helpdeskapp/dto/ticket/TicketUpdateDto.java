@@ -9,11 +9,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TicketDto {
+public class TicketUpdateDto {
     private Integer ticketId;
     private Short sla;
-    private LocalDate openingDate;
     private String title;
-    private String fullName;
     private Integer stageId;
 }

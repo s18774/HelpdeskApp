@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.ticket.TicketCreateDto;
 import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.services.TicketService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
@@ -42,6 +44,13 @@ public class TicketController extends BaseController {
                 .toList());
     }
 
+    @GetMapping("{ticketId}")
+    public ResponseEntity<TicketDto> getTickets(@PathVariable Integer ticketId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        UserTicket ticket = ticketService.getTicket(ticketId, author.getUserId());
+        return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));
+    }
+
     @PostMapping
     public ResponseEntity<BaseResponse> createTicket(@RequestBody TicketCreateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
@@ -55,4 +64,18 @@ public class TicketController extends BaseController {
                 .message("Ticket created!")
                 .build(), HttpStatus.CREATED);
     }
+
+//    @PutMapping
+//    public ResponseEntity<BaseResponse> updateTicket(@RequestBody TicketUpdateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+//        User author = userService.getUser(userDetails.getUsername());
+//
+//        ticketService.addTicket(ticket.getSlaId(), ticket.getDepartmentId(), ticket.getFloor(),
+//                ticket.getTitle(), ticket.getDescription(), ticket.getUserId(), author.getUserId(),
+//                ticket.getHelpdeskId(), ticket.getGroupId());
+//
+//        return new ResponseEntity<>(BaseResponse.builder()
+//                .success(true)
+//                .message("Ticket created!")
+//                .build(), HttpStatus.CREATED);
+//    }
 }
