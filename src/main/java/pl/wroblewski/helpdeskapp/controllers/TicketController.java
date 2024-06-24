@@ -65,17 +65,15 @@ public class TicketController extends BaseController {
                 .build(), HttpStatus.CREATED);
     }
 
-//    @PutMapping
-//    public ResponseEntity<BaseResponse> updateTicket(@RequestBody TicketUpdateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
-//        User author = userService.getUser(userDetails.getUsername());
-//
-//        ticketService.addTicket(ticket.getSlaId(), ticket.getDepartmentId(), ticket.getFloor(),
-//                ticket.getTitle(), ticket.getDescription(), ticket.getUserId(), author.getUserId(),
-//                ticket.getHelpdeskId(), ticket.getGroupId());
-//
-//        return new ResponseEntity<>(BaseResponse.builder()
-//                .success(true)
-//                .message("Ticket created!")
-//                .build(), HttpStatus.CREATED);
-//    }
+    @PutMapping
+    public ResponseEntity<BaseResponse> updateTicket(@RequestBody TicketUpdateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        ticketService.updateTicket(ticket.getTicketId(), ticket.getSlaId(), ticket.getStageId(), ticket.getTitle(), author.getUserId());
+
+        return new ResponseEntity<>(BaseResponse.builder()
+                .success(true)
+                .message("Ticket created!")
+                .build(), HttpStatus.CREATED);
+    }
 }

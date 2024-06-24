@@ -122,5 +122,26 @@ public class TicketService {
             }
         }
     }
+
+    @Transactional
+    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
+        Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
+
+        Ticket ticket = userTicket.getTicket();
+        ticket.setSla(sla);
+        ticket.setTitle(title);
+        ticketRepository.save(ticket);
+
+        userTicket.setStageId(stage);
+        userTicketRepository.save(userTicket);
+    }
 }
 

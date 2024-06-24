@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 public class TicketUpdateDto {
     private Integer ticketId;
-    private Short sla;
+    private Integer slaId;
     private String title;
     private Integer stageId;
 }
