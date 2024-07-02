@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.services;
 
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
@@ -11,6 +12,7 @@ import pl.wroblewski.helpdeskapp.repositories.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class ApplicationService {
     private final SLARepository slaRepository;
     private final DepartmentRepository departmentRepository;
     private final GroupRepository groupRepository;
+    private final StageRepository stageRepository;
 
     //to do list
 
@@ -97,5 +100,40 @@ public class ApplicationService {
             }
         }
 
+    }
+
+    public UserApplication getApplication(Integer applicationId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+
+        if(RoleType.isUser(userAuthor) && !Objects.equals(userApplication.getId().getUserId(), userAuthorId)) {
+            throw new PermissionsException();
+        }
+        return userApplication;
+    }
+
+    public void updateApplication(Integer applicationId, Integer slaId, Integer stageId, String subject, String description, Integer groupId, Integer helpdeskId, Integer userAuthorId) throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
+        Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        User helpdesk = userRepository.findById(helpdeskId).orElseThrow(() -> new EntityNotExists(Group.class));
+
+        Application application = userApplication.getApplication();
+        application.setSla(sla);
+        application.setSubject(subject);
+        application.setDescription(description);
+        applicationRepository.save(application);
+
+        userApplication.setStageId(stage);
+        userApplication.setHelpDeskId(helpdesk);
+        userApplication.setGroupId(group);
+        userApplicationRepository.save(userApplication);
     }
 }

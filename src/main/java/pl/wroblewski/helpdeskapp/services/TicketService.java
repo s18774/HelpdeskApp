@@ -124,7 +124,7 @@ public class TicketService {
     }
 
     @Transactional
-    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
 
@@ -138,6 +138,7 @@ public class TicketService {
         Ticket ticket = userTicket.getTicket();
         ticket.setSla(sla);
         ticket.setTitle(title);
+        ticket.setDescription(description);
         ticketRepository.save(ticket);
 
         userTicket.setStageId(stage);

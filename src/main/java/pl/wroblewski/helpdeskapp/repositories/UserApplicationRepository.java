@@ -8,6 +8,7 @@ import pl.wroblewski.helpdeskapp.models.UserApplicationId;
 import pl.wroblewski.helpdeskapp.models.UserTicket;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserApplicationRepository extends CrudRepository<UserApplication, UserApplicationId> {
     //wyszukujemy wnioski konkretnego użytkownika
@@ -17,4 +18,8 @@ public interface UserApplicationRepository extends CrudRepository<UserApplicatio
             "AND (:userId IS NULL OR ua.id.userId = :userId) " +
             "AND (:slaId IS NULL OR a.sla.slaId = :slaId) ")
     List<UserApplication> findByApplicationIdAndUserIdAndSlaId(@Param("applicationId") Integer applicationId, @Param("userId") Integer userId, @Param("slaId") Integer slaId);
+
+    @Query("Select ua FROM UserApplication ua INNER JOIN Application a ON a.applicationId=ua.id.applicationId " +
+            "WHERE ua.id.applicationId = :applicationId")
+    Optional<UserApplication> findByApplicationId(@Param("applicationId") Integer applicationId);
 }

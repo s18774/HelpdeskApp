@@ -69,7 +69,7 @@ public class TicketController extends BaseController {
     public ResponseEntity<BaseResponse> updateTicket(@RequestBody TicketUpdateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        ticketService.updateTicket(ticket.getTicketId(), ticket.getSlaId(), ticket.getStageId(), ticket.getTitle(), author.getUserId());
+        ticketService.updateTicket(ticket.getTicketId(), ticket.getSlaId(), ticket.getStageId(), ticket.getTitle(), ticket.getDescription(), author.getUserId());
 
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)

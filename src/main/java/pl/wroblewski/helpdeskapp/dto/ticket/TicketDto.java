@@ -14,6 +14,7 @@ public class TicketDto {
     private Short sla;
     private LocalDate openingDate;
     private String title;
+    private String description;
     private String fullName;
     private Integer stageId;
 }

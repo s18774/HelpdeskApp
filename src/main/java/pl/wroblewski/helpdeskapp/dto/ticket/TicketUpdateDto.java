@@ -13,5 +13,6 @@ public class TicketUpdateDto {
     private Integer ticketId;
     private Integer slaId;
     private String title;
+    private String description;
     private Integer stageId;
 }

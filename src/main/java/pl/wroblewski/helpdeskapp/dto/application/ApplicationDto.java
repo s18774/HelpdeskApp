@@ -17,6 +17,10 @@ public class ApplicationDto {
     private Integer applicationId;
     private Short sla;
     private String subject;
+    private String description;
     private LocalDate openingDate;
     private String fullName;
+    private Integer helpdeskId;
+    private Integer groupId;
+    private Integer stageId;
 }
