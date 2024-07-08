@@ -22,7 +22,7 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public List<JobDto> getAllJobs(String jobType, Integer id, Integer userId, Integer slaId, Integer userAuthorId) throws UserNotExistsException {
+    public List<JobDto> getAllJobs(String jobType, Integer id, Integer userId, Integer slaId, Integer stageId, Integer userAuthorId) throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if(RoleType.isUser(userAuthor)) {
@@ -32,14 +32,14 @@ public class DashboardService {
         List<JobDto> result = new ArrayList<>();
         if(jobType == null || jobType.isEmpty() || jobType.equals("ticket")) {
             result.addAll(userTicketRepository
-                    .findByTicketIdAndUserIdAndSlaId(id, userId, slaId)
+                    .findByTicketIdAndUserIdAndSlaIdAndStageId(id, userId, slaId, stageId)
                     .stream()
                     .map(obj -> modelMapper.map(obj, JobDto.class))
                     .toList());
         }
         if(jobType == null || jobType.isEmpty() || jobType.equals("application")) {
             result.addAll(userApplicationRepository
-                    .findByApplicationIdAndUserIdAndSlaId(id, userId, slaId)
+                    .findByApplicationIdAndUserIdAndSlaIdAndStageId(id, userId, slaId, stageId)
                     .stream()
                     .map(obj -> modelMapper.map(obj, JobDto.class))
                     .toList());

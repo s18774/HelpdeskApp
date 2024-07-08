@@ -27,9 +27,15 @@ public class DashboardController extends BaseController {
 
 
     @GetMapping
-    public ResponseEntity<List<JobDto>> getTickets(@PathParam("jobType") String jobType, @PathParam("id") Integer id, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+    public ResponseEntity<List<JobDto>> getTickets(@PathParam("jobType") String jobType,
+                                                   @PathParam("id") Integer id,
+                                                   @PathParam("userId") Integer userId,
+                                                   @PathParam("slaId") Integer slaId,
+                                                   @PathParam("stageId") Integer stageId,
+                                                   @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        return ResponseEntity.ok(dashboardService.getAllJobs(jobType, id, userId, slaId, author.getUserId()));
+        return ResponseEntity.ok(dashboardService.getAllJobs(jobType, id, userId, slaId, stageId, author.getUserId()));
     }
 }

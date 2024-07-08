@@ -35,14 +35,19 @@ public class ApplicationController extends BaseController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<ApplicationDto>> getApplications(@PathParam("applicationId") Integer applicationId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+    public ResponseEntity<List<ApplicationDto>> getApplications(@PathParam("applicationId") Integer applicationId,
+                                                                @PathParam("userId") Integer userId,
+                                                                @PathParam("slaId") Integer slaId,
+                                                                @PathParam("stageId") Integer stageId,
+                                                                @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException {
         User author = userService.getUser(userDetails.getUsername());
 
         var x = applicationService
-                .getAllApplications(applicationId, userId, slaId, author.getUserId());
+                .getAllApplications(applicationId, userId, slaId, stageId, author.getUserId());
 
         return ResponseEntity.ok(applicationService //FIXME nie dziala bo sa nulle w bazie na grupach itp, do naprawy
-                .getAllApplications(applicationId, userId, slaId, author.getUserId())
+                .getAllApplications(applicationId, userId, slaId, stageId, author.getUserId())
                 .stream()
                 .map(t -> modelMapper.map(t, ApplicationDto.class))
                 .toList());
@@ -70,7 +75,7 @@ public class ApplicationController extends BaseController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updateTicket(@RequestBody ApplicationUpdateDto application, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> updateApplication(@RequestBody ApplicationUpdateDto application, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         applicationService.updateApplication(application.getApplicationId(), application.getSlaId(), application.getStageId(), application.getSubject(), application.getDescription(), application.getGroupId(), application.getHelpdeskId(), author.getUserId());

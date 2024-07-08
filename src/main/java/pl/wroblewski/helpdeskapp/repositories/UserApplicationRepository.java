@@ -5,7 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import pl.wroblewski.helpdeskapp.models.UserApplication;
 import pl.wroblewski.helpdeskapp.models.UserApplicationId;
-import pl.wroblewski.helpdeskapp.models.UserTicket;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +15,12 @@ public interface UserApplicationRepository extends CrudRepository<UserApplicatio
     @Query("Select ua FROM UserApplication ua INNER JOIN Application a ON a.applicationId = ua.id.applicationId " +
             "WHERE (:applicationId IS NULL OR a.applicationId = :applicationId) " +
             "AND (:userId IS NULL OR ua.id.userId = :userId) " +
+            "AND (:stageId IS NULL OR ua.stageId.stageId = :stageId) " +
             "AND (:slaId IS NULL OR a.sla.slaId = :slaId) ")
-    List<UserApplication> findByApplicationIdAndUserIdAndSlaId(@Param("applicationId") Integer applicationId, @Param("userId") Integer userId, @Param("slaId") Integer slaId);
+    List<UserApplication> findByApplicationIdAndUserIdAndSlaIdAndStageId(@Param("applicationId") Integer applicationId,
+                                                                         @Param("userId") Integer userId,
+                                                                         @Param("slaId") Integer slaId,
+                                                                         @Param("stageId") Integer stageId);
 
     @Query("Select ua FROM UserApplication ua INNER JOIN Application a ON a.applicationId=ua.id.applicationId " +
             "WHERE ua.id.applicationId = :applicationId")

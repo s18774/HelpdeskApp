@@ -12,4 +12,5 @@ public class JobDto {
     private Integer jobId;
     private String fullName;
     private Integer sla;
+    private Integer stageId;
 }

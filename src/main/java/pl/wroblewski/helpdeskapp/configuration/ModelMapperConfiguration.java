@@ -48,6 +48,7 @@ public class ModelMapperConfiguration {
                     mapper.map(t -> t.getId().getTicketId(), JobDto::setJobId);
                     mapper.map(t -> t.getUser().getFullName(), JobDto::setFullName);
                     mapper.map(t -> t.getTicket().getSla().getSlaLevel(), JobDto::setSla);
+                    mapper.map(t -> t.getStageId().getStageId(), JobDto::setStageId);
                 });
 
     }
@@ -73,6 +74,7 @@ public class ModelMapperConfiguration {
                     mapper.map(t -> t.getId().getApplicationId(), JobDto::setJobId);
                     mapper.map(t -> t.getUser().getFullName(), JobDto::setFullName);
                     mapper.map(t -> t.getApplication().getSla().getSlaLevel(), JobDto::setSla);
+                    mapper.map(t -> t.getStageId().getStageId(), JobDto::setStageId);
                 });
     }
 

@@ -110,4 +110,9 @@ public class UserService implements UserDetailsService {
     public List<Role> getAllRoles() {
         return (List<Role>)roleRepository.findAll();
     }
+
+    public User getUser(Integer userId, Integer userAuthorId) {
+        //admin, helpdesk lub userId == userAuthorId (user sam siebie moze sprawdzic)
+        return null;
+    }
 }

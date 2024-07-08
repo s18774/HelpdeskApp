@@ -34,18 +34,18 @@ public class TicketController extends BaseController {
 
 
     @GetMapping
-    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId, @PathParam("stageId") Integer stageId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         return ResponseEntity.ok(ticketService
-                .getTickets(ticketId, userId, slaId, author.getUserId())
+                .getTickets(ticketId, userId, slaId, stageId, author.getUserId())
                 .stream()
                 .map(t -> modelMapper.map(t, TicketDto.class))
                 .toList());
     }
 
     @GetMapping("{ticketId}")
-    public ResponseEntity<TicketDto> getTickets(@PathVariable Integer ticketId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<TicketDto> getTicket(@PathVariable Integer ticketId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         UserTicket ticket = ticketService.getTicket(ticketId, author.getUserId());
         return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));

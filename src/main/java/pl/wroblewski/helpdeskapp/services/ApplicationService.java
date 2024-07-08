@@ -1,6 +1,5 @@
 package pl.wroblewski.helpdeskapp.services;
 
-import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
@@ -9,8 +8,6 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,13 +34,13 @@ public class ApplicationService {
     //zamykanie wniosku(helpdesk, admin)
     //nadawanie sla do wniosku(helpdesk, admin)
     //przypisanie konkretnego pracownika do wniosku(może to zrobić tylko admin)
-    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId, Integer userAuthorId) throws UserNotExistsException {
+    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId, Integer stageId, Integer userAuthorId) throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if(RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return userApplicationRepository.findByApplicationIdAndUserIdAndSlaId(applicationId, userId, slaId);
+        return userApplicationRepository.findByApplicationIdAndUserIdAndSlaIdAndStageId(applicationId, userId, slaId, stageId);
     }
 
     public void addApplication(Integer slaId, String subject, String description, Integer userId,

@@ -9,8 +9,6 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,13 +36,13 @@ public class TicketService {
     private final StageRepository stageRepository;
 
 
-    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId, Integer stageId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if(RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return (List<UserTicket>) userTicketRepository.findByTicketIdAndUserIdAndSlaId(ticketId, userId, slaId);
+        return (List<UserTicket>) userTicketRepository.findByTicketIdAndUserIdAndSlaIdAndStageId(ticketId, userId, slaId, stageId);
     }
 
     @Transactional

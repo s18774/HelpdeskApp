@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
 import pl.wroblewski.helpdeskapp.dto.role.RoleDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserCreateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDto;
@@ -17,6 +18,7 @@ import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.List;
@@ -47,6 +49,13 @@ public class UserController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
         var users = userService.getAllUsersDetails(firstName, secondName, positionName, groupName, author.getUserId()).stream().map(user -> modelMapper.map(user, UserDetailsDto.class)).toList();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("{userId}")
+    public ResponseEntity<UserDetailsDto> getUser(@PathVariable Integer userId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        User user = userService.getUser(userId, author.getUserId());
+        return ResponseEntity.ok(modelMapper.map(user, UserDetailsDto.class));
     }
 
     @GetMapping("/helpdesk")
