@@ -3,17 +3,21 @@ package pl.wroblewski.helpdeskapp.controllers;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
 import pl.wroblewski.helpdeskapp.dto.role.RoleDto;
 import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserCreateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserUpdateDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -81,5 +85,30 @@ public class UserController extends BaseController {
                 .map(role -> modelMapper.map(role, RoleDto.class))
                 .toList();
         return ResponseEntity.ok(roles);
+    }
+
+    @PutMapping
+    public ResponseEntity<BaseResponse> updateUser(@RequestBody UserUpdateDto user, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        userService.updateUser(
+                user.getUserId(),
+                user.getFirstName(),
+                user.getSecondName(),
+                user.getPositionName(),
+                user.getGroupId(),
+                user.getSupervisorId(),
+                user.getDepartmentId(),
+                user.getRoleId(),
+                user.getPhoneNumber(),
+                user.getEmail(),
+                user.getFloor(),
+                user.getRoom(),
+                author.getUserId());
+
+        return new ResponseEntity<>(BaseResponse.builder()
+                .success(true)
+                .message("User created!")
+                .build(), HttpStatus.CREATED);
     }
 }

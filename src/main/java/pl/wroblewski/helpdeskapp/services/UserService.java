@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -111,8 +112,35 @@ public class UserService implements UserDetailsService {
         return (List<Role>)roleRepository.findAll();
     }
 
-    public User getUser(Integer userId, Integer userAuthorId) {
-        //admin, helpdesk lub userId == userAuthorId (user sam siebie moze sprawdzic)
-        return null;
+    public User getUser(Integer userId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if(!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor) && !userAuthorId.equals(userId)) {
+            throw new PermissionsException();
+        }
+
+        return userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
+    }
+
+    @Transactional
+    public void updateUser(Integer userId, String firstName, String secondName,
+                           String positionName, Integer groupId,
+                           Integer supervisorId, Integer departmentId,
+                           Integer roleId, String phoneNumber,
+                           String email, Integer floor,
+                           Integer room, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if(!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
+        user.setFirstName(firstName);
+        user.setSecondName(secondName);
+        user.setPositionName(positionName);
+        user.setGroup(group); //TODO: dodac brakujace pola
+        userRepository.save(user);
     }
 }

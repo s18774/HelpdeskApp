@@ -89,6 +89,14 @@ public class ModelMapperConfiguration {
                     mapper.map(User::getPositionName, UserDetailsDto::setPositionName);
                     mapper.map(User::getFirstName, UserDetailsDto::setFirstName);
                     mapper.map(User::getSecondName, UserDetailsDto::setSecondName);
+                    mapper.map(u -> u.getGroup().getGroupId(), UserDetailsDto::setGroupId);
+                    mapper.map(u -> u.getSupervisor().getUserId(), UserDetailsDto::setSupervisorId);
+                    mapper.map(u -> u.getDepartmentId().getDepartmentId(), UserDetailsDto::setDepartmentId);
+                    mapper.map(u -> u.getRole().getRoleId(), UserDetailsDto::setRoleId);
+                    mapper.map(User::getPhoneNumber, UserDetailsDto::setPhoneNumber);
+                    mapper.map(User::getEmail, UserDetailsDto::setEmail);
+                    mapper.map(User::getFloor, UserDetailsDto::setFloor);
+                    mapper.map(User::getRoom, UserDetailsDto::setRoom);
                 });
     }
 

@@ -4,17 +4,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDetailsDto {
+public class UserUpdateDto {
     private Integer userId;
     private String firstName;
     private String secondName;
-    private Integer groupId;
-    private String groupName;
     private String positionName;
+    private Integer groupId;
     private Integer supervisorId;
     private Integer departmentId;
     private Integer roleId;
