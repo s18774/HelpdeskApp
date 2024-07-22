@@ -1,4 +1,4 @@
-package pl.wroblewski.helpdeskapp.dto;
+package pl.wroblewski.helpdeskapp.dto.group;
 
 import jakarta.persistence.Column;
 import lombok.Getter;
@@ -12,4 +12,6 @@ public class GroupDto {
     private Integer groupId;
 
     private String groupName;
+
+    private Byte isGroupActive;
 }

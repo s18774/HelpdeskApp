@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.services;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -135,12 +136,32 @@ public class UserService implements UserDetailsService {
             throw new PermissionsException();
         }
 
+        User supervisor = null;
+        if(supervisorId != null) {
+            supervisor = userRepository.findById(supervisorId).orElseThrow(UserNotExistsException::new);
+        }
+
+        Department department = null;
+        if(departmentId != null) {
+            department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
+        }
+
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
+
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         user.setFirstName(firstName);
         user.setSecondName(secondName);
         user.setPositionName(positionName);
-        user.setGroup(group); //TODO: dodac brakujace pola
+        user.setGroup(group);
+        user.setSupervisor(supervisor);
+        user.setDepartmentId(department);
+        user.setRole(role);
+        user.setPhoneNumber(phoneNumber);
+        user.setEmail(email);
+        user.setFloor(floor);
+        user.setRoom(room);
+
         userRepository.save(user);
     }
 }
