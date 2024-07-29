@@ -22,7 +22,7 @@ public class GroupService {
         return (List<Group>)groupRepository.findAll();
     }
 
-    public Object createGroup(String groupName, int userAuthorId) throws PermissionsException, UserNotExistsException {
+    public Group createGroup(String groupName, int userAuthorId) throws PermissionsException, UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if(!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
@@ -32,5 +32,48 @@ public class GroupService {
                 .groupName(groupName)
                 .isGroupActive((byte)1)
                 .build());
+    }
+
+    public Group getGroup(Integer groupId, Integer userAuthorId) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+                throw new PermissionsException();
+        }
+
+        return groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+    }
+
+    public List<User> getGroupUsers(Integer groupId, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        Group group = getGroup(groupId, userAuthorId);
+        return userRepository.findAllByGroup(group);
+    }
+
+    public void removeUser(Integer groupId, Integer userId, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        if (!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+        Group group = getGroup(groupId, userAuthorId);
+        User user = userRepository.findByUserIdAndGroup(userId, group).orElseThrow(UserNotExistsException::new);
+        user.setGroup(null);
+        userRepository.save(user);
+    }
+
+    public void addUser(Integer groupId, Integer userId, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        if (!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+        Group group = getGroup(groupId, userAuthorId);
+        User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
+        user.setGroup(group);
+        userRepository.save(user);
     }
 }

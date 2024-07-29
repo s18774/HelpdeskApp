@@ -148,7 +148,10 @@ public class UserService implements UserDetailsService {
 
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
 
-        Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        Group group = null;
+        if(groupId != null) {
+            group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        }
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         user.setFirstName(firstName);
         user.setSecondName(secondName);
@@ -160,7 +163,7 @@ public class UserService implements UserDetailsService {
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFloor(floor);
-        user.setRoom(room);
+        user.setRoom(room); //TODO: brakuje username do edycji
 
         userRepository.save(user);
     }

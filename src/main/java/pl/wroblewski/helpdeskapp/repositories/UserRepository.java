@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import pl.wroblewski.helpdeskapp.models.Device;
+import pl.wroblewski.helpdeskapp.models.Group;
 import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.User;
 
@@ -36,4 +37,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     List<User> findAllByFirstnameAndSecondNameAndPositionName(@Param("firstName") String firstName,
                                                               @Param("secondName") String secondName,
                                                               @Param("positionName") String positionName);
+
+    List<User> findAllByGroup(Group group);
+    Optional<User> findByUserIdAndGroup(Integer userId, Group group);
 }

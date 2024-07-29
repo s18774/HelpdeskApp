@@ -6,14 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.group.GroupCreateDto;
 import pl.wroblewski.helpdeskapp.dto.group.GroupDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
+import pl.wroblewski.helpdeskapp.dto.user.UserDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
+import pl.wroblewski.helpdeskapp.models.Group;
 import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.services.GroupService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
@@ -30,7 +34,7 @@ public class GroupController extends BaseController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<GroupDto>> getAllUsers() {
+    public ResponseEntity<List<GroupDto>> getAllGroups() {
         var groups = groupService.getAllGroups().stream().map(group -> modelMapper.map(group, GroupDto.class)).toList();
         return ResponseEntity.ok(groups);
     }
@@ -42,5 +46,42 @@ public class GroupController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
         var newGroup = groupService.createGroup(groupCreateDto.getGroupName(), author.getUserId());
         return ResponseEntity.ok(modelMapper.map(newGroup, GroupDto.class));
+    }
+
+    @GetMapping("{groupId}")
+    public ResponseEntity<GroupDto> getGroup(@PathVariable Integer groupId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        Group group = groupService.getGroup(groupId, author.getUserId());
+        return ResponseEntity.ok(modelMapper.map(group, GroupDto.class));
+    }
+
+    @GetMapping("{groupId}/users")
+    public ResponseEntity<List<UserDetailsDto>> getGroupUsers(@PathVariable Integer groupId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        List<User> users = groupService.getGroupUsers(groupId, author.getUserId());
+        return ResponseEntity.ok(users
+                .stream()
+                .map(u -> modelMapper.map(u, UserDetailsDto.class))
+                .toList());
+    }
+
+    @PostMapping("{groupId}/users/{userId}")
+    public ResponseEntity<BaseResponse> getGroupUsers(@PathVariable Integer groupId, @PathVariable Integer userId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        groupService.addUser(groupId, userId, author.getUserId());
+        return ResponseEntity.ok(BaseResponse.builder()
+                .success(true)
+                .message("Done")
+                .build());
+    }
+
+    @DeleteMapping("{groupId}/users/{userId}")
+    public ResponseEntity<BaseResponse> removeUser(@PathVariable Integer groupId, @PathVariable Integer userId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        groupService.removeUser(groupId, userId, author.getUserId());
+        return ResponseEntity.ok(BaseResponse.builder()
+                .success(true)
+                .message("Done")
+                .build());
     }
 }
