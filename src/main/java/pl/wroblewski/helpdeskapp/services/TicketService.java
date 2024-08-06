@@ -9,8 +9,10 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -122,16 +124,24 @@ public class TicketService {
     }
 
     @Transactional
-    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description, Integer helpdeskId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
 
         if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
+        Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
+        if(stage.getStageName().equals("Closed")) {
+            throw new PermissionsException();
+        }
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
-        Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
+
+        User helpdesk = null;
+        if(helpdeskId != null) {
+            helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
+        }
 
         Ticket ticket = userTicket.getTicket();
         ticket.setSla(sla);
@@ -140,6 +150,28 @@ public class TicketService {
         ticketRepository.save(ticket);
 
         userTicket.setStageId(stage);
+        if(stage.getStageName().equals("Closed")) {
+            userTicket.setClosingDate(LocalDate.now());
+        }
+        userTicket.setHelpDeskId(helpdesk);
+        userTicketRepository.save(userTicket);
+    }
+
+    public void closeTicket(Integer ticketId, Integer userAuthorId) throws EntityNotExists, PermissionsException, UserNotExistsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        if(userTicket.getStageId().getStageName().equals("Closed")) {
+            throw new PermissionsException();
+        }
+
+        Stage stage = stageRepository.findByStageName("Closed").orElseThrow(() -> new EntityNotExists(Stage.class));
+        userTicket.setStageId(stage);
+        userTicket.setClosingDate(LocalDate.now());
         userTicketRepository.save(userTicket);
     }
 }

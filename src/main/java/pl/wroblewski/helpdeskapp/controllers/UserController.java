@@ -93,6 +93,7 @@ public class UserController extends BaseController {
 
         userService.updateUser(
                 user.getUserId(),
+                user.getUsername(),
                 user.getFirstName(),
                 user.getSecondName(),
                 user.getPositionName(),

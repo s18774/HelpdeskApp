@@ -2,6 +2,7 @@ package pl.wroblewski.helpdeskapp.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.group.GroupCreateDto;
 import pl.wroblewski.helpdeskapp.dto.group.GroupDto;
+import pl.wroblewski.helpdeskapp.dto.group.GroupUpdateDto;
 import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
@@ -83,5 +86,17 @@ public class GroupController extends BaseController {
                 .success(true)
                 .message("Done")
                 .build());
+    }
+
+    @PutMapping
+    public ResponseEntity<BaseResponse> updateGroup(@RequestBody GroupUpdateDto group, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        groupService.updateGroup(group.getGroupId(), group.getGroupName(), group.getIsGroupActive(), author.getUserId());
+
+        return new ResponseEntity<>(BaseResponse.builder()
+                .success(true)
+                .message("Group updated!")
+                .build(), HttpStatus.CREATED);
     }
 }

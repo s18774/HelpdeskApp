@@ -11,6 +11,7 @@ import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +76,18 @@ public class GroupService {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         user.setGroup(group);
         userRepository.save(user);
+    }
+
+    public void updateGroup(Integer groupId, String groupName, Byte isGroupActive, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if (!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        group.setGroupName(groupName);
+        group.setIsGroupActive(isGroupActive);
+        groupRepository.save(group);
     }
 }

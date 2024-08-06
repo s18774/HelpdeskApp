@@ -8,6 +8,7 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -117,10 +118,18 @@ public class ApplicationService {
             throw new PermissionsException();
         }
 
-        SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
         Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
+        if(stage.getStageName().equals("Closed")) {
+            throw new PermissionsException();
+        }
+
+        SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
-        User helpdesk = userRepository.findById(helpdeskId).orElseThrow(() -> new EntityNotExists(Group.class));
+
+        User helpdesk = null;
+        if(helpdeskId != null){
+            helpdesk = userRepository.findById(helpdeskId).orElseThrow(() -> new EntityNotExists(Group.class));
+        }
 
         Application application = userApplication.getApplication();
         application.setSla(sla);
@@ -129,6 +138,9 @@ public class ApplicationService {
         applicationRepository.save(application);
 
         userApplication.setStageId(stage);
+        if(stage.getStageName().equals("Closed")) {
+            userApplication.setClosingDate(LocalDate.now());
+        }
         userApplication.setHelpDeskId(helpdesk);
         userApplication.setGroupId(group);
         userApplicationRepository.save(userApplication);

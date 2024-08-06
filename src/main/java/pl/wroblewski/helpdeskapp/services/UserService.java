@@ -124,7 +124,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void updateUser(Integer userId, String firstName, String secondName,
+    public void updateUser(Integer userId, String username, String firstName, String secondName,
                            String positionName, Integer groupId,
                            Integer supervisorId, Integer departmentId,
                            Integer roleId, String phoneNumber,
@@ -163,7 +163,8 @@ public class UserService implements UserDetailsService {
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFloor(floor);
-        user.setRoom(room); //TODO: brakuje username do edycji
+        user.setRoom(room);
+        user.setUsername(username);
 
         userRepository.save(user);
     }

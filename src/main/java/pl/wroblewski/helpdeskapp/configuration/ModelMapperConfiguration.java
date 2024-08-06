@@ -39,6 +39,7 @@ public class ModelMapperConfiguration {
                     mapper.map(t -> t.getUser().getFullName(), TicketDto::setFullName);
                     mapper.map(t -> t.getStageId().getStageId(), TicketDto::setStageId);
                     mapper.map(t -> t.getTicket().getDescription(), TicketDto::setDescription);
+                    mapper.map(t -> t.getHelpDeskId().getUserId(), TicketDto::setHelpdeskId);
                 });
 
 
