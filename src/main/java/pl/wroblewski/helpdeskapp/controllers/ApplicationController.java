@@ -85,4 +85,15 @@ public class ApplicationController extends BaseController {
                 .message("Application updated!")
                 .build(), HttpStatus.CREATED);
     }
+
+    @PostMapping("{applicationId}/close")
+    public ResponseEntity<BaseResponse> closeApplication(@PathVariable Integer applicationId, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        applicationService.closeApplication(applicationId, author.getUserId());
+        return new ResponseEntity<>(BaseResponse.builder()
+                .success(true)
+                .message("Application updated!")
+                .build(), HttpStatus.OK);
+    }
 }

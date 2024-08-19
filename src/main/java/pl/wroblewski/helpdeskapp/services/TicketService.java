@@ -143,6 +143,10 @@ public class TicketService {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
         }
 
+        if(!RoleType.isAdmin(userAuthor) && helpdesk != userTicket.getHelpDeskId()) {
+            throw new PermissionsException();
+        }
+
         Ticket ticket = userTicket.getTicket();
         ticket.setSla(sla);
         ticket.setTitle(title);

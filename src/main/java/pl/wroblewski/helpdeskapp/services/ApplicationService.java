@@ -131,6 +131,10 @@ public class ApplicationService {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
 
+        if(!RoleType.isAdmin(userAuthor) && helpdesk != userApplication.getHelpDeskId()) {
+            throw new PermissionsException();
+        }
+
         Application application = userApplication.getApplication();
         application.setSla(sla);
         application.setSubject(subject);
@@ -145,4 +149,23 @@ public class ApplicationService {
         userApplication.setGroupId(group);
         userApplicationRepository.save(userApplication);
     }
+
+    public void closeApplication(Integer applicationId, Integer userAuthorId) throws EntityNotExists, PermissionsException, UserNotExistsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        if(userApplication.getStageId().getStageName().equals("Closed")) {
+            throw new PermissionsException();
+        }
+
+        Stage stage = stageRepository.findByStageName("Closed").orElseThrow(() -> new EntityNotExists(Stage.class));
+        userApplication.setStageId(stage);
+        userApplication.setClosingDate(LocalDate.now());
+        userApplicationRepository.save(userApplication);
+    }
+
 }
