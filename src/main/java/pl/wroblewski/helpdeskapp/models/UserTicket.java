@@ -46,4 +46,8 @@ public class UserTicket {
 
     @Column(name = "deadline_date", nullable = true)
     private LocalDate deadlineDate;
+
+    @ManyToOne
+    @JoinColumn(name = "resolver_user", nullable = true)
+    private User resolverUser;
 }

@@ -156,6 +156,7 @@ public class TicketService {
         userTicket.setStageId(stage);
         if(stage.getStageName().equals("Closed")) {
             userTicket.setClosingDate(LocalDate.now());
+            userTicket.setResolverUser(userAuthor);
         }
         userTicket.setHelpDeskId(helpdesk);
         userTicketRepository.save(userTicket);
@@ -176,6 +177,7 @@ public class TicketService {
         Stage stage = stageRepository.findByStageName("Closed").orElseThrow(() -> new EntityNotExists(Stage.class));
         userTicket.setStageId(stage);
         userTicket.setClosingDate(LocalDate.now());
+        userTicket.setResolverUser(userAuthor);
         userTicketRepository.save(userTicket);
     }
 }

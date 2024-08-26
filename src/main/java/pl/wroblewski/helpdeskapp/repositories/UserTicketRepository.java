@@ -3,6 +3,7 @@ package pl.wroblewski.helpdeskapp.repositories;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.models.UserTicketId;
 
@@ -25,4 +26,6 @@ public interface UserTicketRepository extends CrudRepository<UserTicket, UserTic
     @Query("Select ut FROM UserTicket ut INNER JOIN Ticket t ON t.ticketId=ut.id.ticketId " +
             "WHERE ut.id.ticketId = :ticketId")
     Optional<UserTicket> findByTicketId(@Param("ticketId") Integer ticketId);
+
+    List<UserTicket> findAllByResolverUser(User resolverUser);
 }

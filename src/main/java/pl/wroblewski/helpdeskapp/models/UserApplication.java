@@ -43,4 +43,8 @@ public class UserApplication {
 
     @Column(name = "closing_date", nullable = true)//może być puste
     private LocalDate closingDate;
+
+    @ManyToOne
+    @JoinColumn(name = "resolver_user", nullable = true)
+    private User resolverUser;
 }
