@@ -8,6 +8,7 @@ import pl.wroblewski.helpdeskapp.models.UserApplication;
 import pl.wroblewski.helpdeskapp.models.UserApplicationId;
 import pl.wroblewski.helpdeskapp.models.UserTicket;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,5 +29,5 @@ public interface UserApplicationRepository extends CrudRepository<UserApplicatio
             "WHERE ua.id.applicationId = :applicationId")
     Optional<UserApplication> findByApplicationId(@Param("applicationId") Integer applicationId);
 
-    List<UserApplication> findAllByResolverUser(User resolverUser); //TODO dodac filtrowanie pod dacie
+    List<UserApplication> findAllByResolverUserAndClosingDateBetween(User resolverUser, LocalDate dateFrom, LocalDate dateTo); //TODO dodac filtrowanie pod dacie
 }
