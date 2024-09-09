@@ -4,9 +4,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.models.UserApplication;
 import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.models.UserTicketId;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +29,6 @@ public interface UserTicketRepository extends CrudRepository<UserTicket, UserTic
             "WHERE ut.id.ticketId = :ticketId")
     Optional<UserTicket> findByTicketId(@Param("ticketId") Integer ticketId);
 
-    List<UserTicket> findAllByResolverUser(User resolverUser);
+    List<UserTicket> findAllByResolverUserAndClosingDateBetweenOrderByClosingDate(User resolverUser, LocalDate dateFrom, LocalDate dateTo);
+    List<UserTicket> findAllByClosingDateBetweenOrderByClosingDate(LocalDate dateFrom, LocalDate dateTo);
 }

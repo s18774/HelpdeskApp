@@ -29,5 +29,7 @@ public interface UserApplicationRepository extends CrudRepository<UserApplicatio
             "WHERE ua.id.applicationId = :applicationId")
     Optional<UserApplication> findByApplicationId(@Param("applicationId") Integer applicationId);
 
-    List<UserApplication> findAllByResolverUserAndClosingDateBetween(User resolverUser, LocalDate dateFrom, LocalDate dateTo); //TODO dodac filtrowanie pod dacie
+    List<UserApplication> findAllByResolverUserAndClosingDateBetweenOrderByClosingDate(User resolverUser, LocalDate dateFrom, LocalDate dateTo); //TODO dodac filtrowanie pod dacie
+
+    List<UserApplication> findAllByClosingDateBetweenOrderByClosingDate(LocalDate dateFrom, LocalDate dateTo);
 }

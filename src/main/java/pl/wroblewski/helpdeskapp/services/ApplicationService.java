@@ -165,6 +165,7 @@ public class ApplicationService {
         Stage stage = stageRepository.findByStageName("Closed").orElseThrow(() -> new EntityNotExists(Stage.class));
         userApplication.setStageId(stage);
         userApplication.setClosingDate(LocalDate.now());
+        userApplication.setResolverUser(userAuthor);
         userApplicationRepository.save(userApplication);
     }
 

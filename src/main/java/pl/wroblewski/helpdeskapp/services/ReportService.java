@@ -7,8 +7,10 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.RoleType;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserApplication;
+import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.repositories.UserApplicationRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
+import pl.wroblewski.helpdeskapp.repositories.UserTicketRepository;
 import pl.wroblewski.helpdeskapp.utils.PdfUtil;
 
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportService {
     private final UserApplicationRepository userApplicationRepository;
+    private final UserTicketRepository userTicketRepository;
     private final UserRepository userRepository;
     private final PdfUtil pdfUtil;
 
@@ -27,12 +30,15 @@ public class ReportService {
         if(!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
-        User helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
+        User helpdesk = null;
+        if(helpdeskId != null) {
+            helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
+        }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<h1>Raport</h1>")
+        sb.append("<h1>Report</h1>")
                 .append("<p>Helpdesk ")
-                .append(helpdesk.getFullName())
+                .append(helpdesk != null ? helpdesk.getFullName() : "all employees")
                 .append(" from ")
                 .append(dateFrom)
                 .append(" to ")
@@ -42,24 +48,47 @@ public class ReportService {
         sb.append("<table style='width: 100%'><thead><tr>")
                 .append("<th>Id</th>")
                 .append("<th>Closing date</th>")
+                .append("<th>Type</th>")
                 .append("</tr></thead>")
                 .append("<tbody>");
 
-        switch (jobType) {
-            case "applications" -> {
-                List<UserApplication> applications = userApplicationRepository.findAllByResolverUserAndClosingDateBetween(helpdesk, dateFrom, dateTo);
-                for(var app : applications) {
-                    sb.append("<tr>")
-                            .append("<td>").append(app.getId().getApplicationId()).append("</td>")
-                            .append("<td>").append(app.getClosingDate()).append("</td>")
-                            .append("</tr>");
 
-                }
+        if(jobType.equals("application") || jobType.equals("all")) {
+            List<UserApplication> applications;
+            if(helpdesk != null) {
+                applications = userApplicationRepository
+                        .findAllByResolverUserAndClosingDateBetweenOrderByClosingDate(helpdesk, dateFrom, dateTo);
+            } else {
+                applications = userApplicationRepository
+                        .findAllByClosingDateBetweenOrderByClosingDate(dateFrom, dateTo);
             }
-            case "tickets" -> {}
-            case "both" -> {}
-        }
 
+            for(var app : applications) {
+                sb.append("<tr>")
+                        .append("<td>").append(app.getId().getApplicationId()).append("</td>")
+                        .append("<td>").append(app.getClosingDate()).append("</td>")
+                        .append("<td>application</td>")
+                        .append("</tr>");
+
+            }
+        }
+        if(jobType.equals("ticket") || jobType.equals("all")) {
+            List<UserTicket> tickets;
+            if(helpdesk != null) {
+                tickets = userTicketRepository
+                        .findAllByResolverUserAndClosingDateBetweenOrderByClosingDate(helpdesk, dateFrom, dateTo);
+            } else {
+                tickets = userTicketRepository.findAllByClosingDateBetweenOrderByClosingDate(dateFrom, dateTo);
+            }
+            for(var ticket : tickets) {
+                sb.append("<tr>")
+                        .append("<td>").append(ticket.getId().getTicketId()).append("</td>")
+                        .append("<td>").append(ticket.getClosingDate()).append("</td>")
+                        .append("<td>ticket</td>")
+                        .append("</tr>");
+
+            }
+        }
 
         sb.append("</tbody></table>");
         return pdfUtil.toPdf(sb.toString());
