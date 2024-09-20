@@ -27,11 +27,11 @@ public class ReportService {
     public byte[] getHelpdeskReport(LocalDate dateFrom, LocalDate dateTo, Integer helpdeskId, String jobType,
                                     Integer userAuthorId) throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        if(!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
         User helpdesk = null;
-        if(helpdeskId != null) {
+        if (helpdeskId != null) {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
         }
 
@@ -48,14 +48,18 @@ public class ReportService {
         sb.append("<table style='width: 100%'><thead><tr>")
                 .append("<th>Id</th>")
                 .append("<th>Closing date</th>")
-                .append("<th>Type</th>")
-                .append("</tr></thead>")
+                .append("<th>Type</th>");
+
+        if (helpdesk == null) {
+            sb.append("<th>Closed by</th>");
+        }
+
+        sb.append("</tr></thead>")
                 .append("<tbody>");
 
-
-        if(jobType.equals("application") || jobType.equals("all")) {
+        if (jobType.equals("application") || jobType.equals("all")) {
             List<UserApplication> applications;
-            if(helpdesk != null) {
+            if (helpdesk != null) {
                 applications = userApplicationRepository
                         .findAllByResolverUserAndClosingDateBetweenOrderByClosingDate(helpdesk, dateFrom, dateTo);
             } else {
@@ -63,29 +67,35 @@ public class ReportService {
                         .findAllByClosingDateBetweenOrderByClosingDate(dateFrom, dateTo);
             }
 
-            for(var app : applications) {
+            for (var app : applications) {
                 sb.append("<tr>")
                         .append("<td>").append(app.getId().getApplicationId()).append("</td>")
                         .append("<td>").append(app.getClosingDate()).append("</td>")
-                        .append("<td>application</td>")
-                        .append("</tr>");
+                        .append("<td>application</td>");
+                if (helpdesk == null) {
+                    sb.append("<td>").append(app.getResolverUser().getFullName()).append("</td>");
+                }
+                sb.append("</tr>");
 
             }
         }
-        if(jobType.equals("ticket") || jobType.equals("all")) {
+        if (jobType.equals("ticket") || jobType.equals("all")) {
             List<UserTicket> tickets;
-            if(helpdesk != null) {
+            if (helpdesk != null) {
                 tickets = userTicketRepository
                         .findAllByResolverUserAndClosingDateBetweenOrderByClosingDate(helpdesk, dateFrom, dateTo);
             } else {
                 tickets = userTicketRepository.findAllByClosingDateBetweenOrderByClosingDate(dateFrom, dateTo);
             }
-            for(var ticket : tickets) {
+            for (var ticket : tickets) {
                 sb.append("<tr>")
                         .append("<td>").append(ticket.getId().getTicketId()).append("</td>")
                         .append("<td>").append(ticket.getClosingDate()).append("</td>")
-                        .append("<td>ticket</td>")
-                        .append("</tr>");
+                        .append("<td>ticket</td>");
+                if (helpdesk == null) {
+                    sb.append("<td>").append(ticket.getResolverUser().getFullName()).append("</td>");
+                }
+                sb.append("</tr>");
 
             }
         }

@@ -13,6 +13,7 @@ public class TicketDto {
     private Integer ticketId;
     private Short sla;
     private LocalDate openingDate;
+    private LocalDate closingDate;
     private String title;
     private String description;
     private String fullName;

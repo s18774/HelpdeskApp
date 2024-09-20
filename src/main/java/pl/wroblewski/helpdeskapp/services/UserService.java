@@ -99,6 +99,7 @@ public class UserService implements UserDetailsService {
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
 
+        newUser.setUserId(0);
         newUser.setGroup(group);
         newUser.setEmploymentDate(LocalDate.now());
         newUser.setDepartmentId(department);
