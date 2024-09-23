@@ -19,6 +19,7 @@ import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserUpdateDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
+import pl.wroblewski.helpdeskapp.exceptions.InvalidRoleException;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
@@ -71,7 +72,7 @@ public class UserController extends BaseController {
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserCreateDto userCreateDto,
                                                   @AuthenticationPrincipal UserDetails userDetails)
-            throws EntityNotExists, UserNotExistsException, PermissionsException {
+            throws EntityNotExists, UserNotExistsException, PermissionsException, InvalidRoleException {
         User author = userService.getUser(userDetails.getUsername());
         User newUser = modelMapper.map(userCreateDto, User.class);
         newUser = userService.createUser(newUser, userCreateDto.getGroupId(), userCreateDto.getDepartmentId(), userCreateDto.getUserId(), userCreateDto.getRoleId(), author.getUserId());

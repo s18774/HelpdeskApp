@@ -71,4 +71,11 @@ public class DeviceController extends BaseController {
                 deviceCreateDto.getGuarantee(), author.getUserId());
         return ResponseEntity.ok(modelMapper.map(newDevice, DeviceDto.class));
     }
+
+    @GetMapping("{deviceId}")
+    public ResponseEntity<DeviceDto> getDevice(@PathVariable("deviceId") Integer deviceId,
+                                               @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+        User author = userService.getUser(userDetails.getUsername());
+        return ResponseEntity.ok(modelMapper.map(deviceService.getDevice(deviceId, author.getUserId()), DeviceDto.class));
+    }
 }

@@ -8,10 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
-import pl.wroblewski.helpdeskapp.exceptions.InvalidCredentialsException;
-import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
-import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
+import pl.wroblewski.helpdeskapp.exceptions.*;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.DepartmentRepository;
 import pl.wroblewski.helpdeskapp.repositories.GroupRepository;
@@ -80,7 +77,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(User newUser, Integer groupId, Integer departmentId, Integer supervisorId, Integer roleId, Integer userAuthorId)
-            throws UserNotExistsException, PermissionsException, EntityNotExists {
+            throws UserNotExistsException, PermissionsException, EntityNotExists, InvalidRoleException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
@@ -98,6 +95,11 @@ public class UserService implements UserDetailsService {
 
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
+
+        if((role.getRoleName().equals("Admin") || role.getRoleName().equals("HelpDesk"))
+                && !department.getDepartmentName().equals("IT")) {
+            throw new InvalidRoleException("Admin/HelpDesk have to connect with IT Department");
+        }
 
         newUser.setUserId(0);
         newUser.setGroup(group);

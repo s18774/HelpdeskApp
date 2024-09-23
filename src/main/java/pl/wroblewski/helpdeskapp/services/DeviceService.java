@@ -56,4 +56,18 @@ public class DeviceService {
                 .inventoryNumber(inventoryNumber)
                 .build());
     }
+
+    public Device getDevice(Integer deviceId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
+        if(!RoleType.isHelpdesk(userAuthor) && !RoleType.isAdmin(userAuthor)
+                && !userHasDevice(userAuthor, device)) {
+            throw new PermissionsException();
+        }
+        return device;
+    }
+
+    private boolean userHasDevice(User user, Device device) {
+        return device.getUserDevices().stream().anyMatch(d -> d.getUser().getUserId() == user.getUserId());
+    }
 }

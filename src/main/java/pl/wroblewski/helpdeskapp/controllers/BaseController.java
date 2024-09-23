@@ -6,14 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
-import pl.wroblewski.helpdeskapp.exceptions.BaseHttpException;
-import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
-import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
-import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
+import pl.wroblewski.helpdeskapp.exceptions.*;
 import pl.wroblewski.helpdeskapp.models.User;
 
 public class BaseController {
-    @ExceptionHandler({EntityNotExists.class, UserNotExistsException.class, PermissionsException.class})
+    @ExceptionHandler({EntityNotExists.class, UserNotExistsException.class, PermissionsException.class, InvalidRoleException.class})
     public ResponseEntity<BaseResponse> handleException(Exception ex) {
         BaseResponse response = BaseResponse
                 .builder()
