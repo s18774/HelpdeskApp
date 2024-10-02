@@ -25,10 +25,4 @@ public class UserDevice {
 
     @Column(name = "location_of_device")
     private String locationOfDevice;
-
-    @Column(name = "ip_addres", nullable = true)
-    private String ipAddres;
-
-    @Column(name = "mac_addres", nullable = true)
-    private String macAddres;
 }

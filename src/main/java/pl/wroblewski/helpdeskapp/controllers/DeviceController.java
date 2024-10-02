@@ -3,21 +3,27 @@ package pl.wroblewski.helpdeskapp.controllers;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceTypeDto;
+import pl.wroblewski.helpdeskapp.dto.device.DeviceUpdateDto;
+import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
+import pl.wroblewski.helpdeskapp.models.UserDevice;
 import pl.wroblewski.helpdeskapp.services.DeviceService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/device")
@@ -76,6 +82,29 @@ public class DeviceController extends BaseController {
     public ResponseEntity<DeviceDto> getDevice(@PathVariable("deviceId") Integer deviceId,
                                                @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
-        return ResponseEntity.ok(modelMapper.map(deviceService.getDevice(deviceId, author.getUserId()), DeviceDto.class));
+        var device = deviceService.getDevice(deviceId, author.getUserId());
+        var deviceDto = modelMapper.map(device, DeviceDto.class);
+
+        if(device.getUserDevices() != null) {
+            Optional<User> user = device.getUserDevices().stream().map(UserDevice::getUser).findFirst();
+            if(user.isPresent()) {
+                deviceDto.setFullName(user.get().getFullName());
+                deviceDto.setUserId(user.get().getUserId());
+            }
+        }
+
+        return ResponseEntity.ok(deviceDto);
+    }
+
+    @PutMapping
+    public ResponseEntity<BaseResponse> updateDevice(@RequestBody DeviceUpdateDto device, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        deviceService.updateDevice(device.getDeviceId(), device.getUserId(), device.getInventoryNumber(), device.getIsGuarantee(), author.getUserId());
+
+        return new ResponseEntity<>(BaseResponse.builder()
+                .success(true)
+                .message("Device updated!")
+                .build(), HttpStatus.OK);
     }
 }

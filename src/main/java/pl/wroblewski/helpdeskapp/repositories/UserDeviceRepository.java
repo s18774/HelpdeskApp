@@ -3,13 +3,15 @@ package pl.wroblewski.helpdeskapp.repositories;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import pl.wroblewski.helpdeskapp.models.UserDevice;
-import pl.wroblewski.helpdeskapp.models.UserDeviceId;
-import pl.wroblewski.helpdeskapp.models.UserTicket;
+import pl.wroblewski.helpdeskapp.models.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDeviceRepository extends CrudRepository<UserDevice, UserDeviceId> {
+
+    Optional<UserDevice> findByDeviceAndUser(Device device, User user);
+
     //możemy wpisać device_id i znaleźć do kogo należy urządzenie lub wpisać user_id i sprawdzić listę wszystkich urządzeń na stanie usera
 
 //    @Query("Select ud FROM UserDevice ud INNER JOIN Device d ON d.deviceId=ud.id.deviceId " +

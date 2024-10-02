@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
@@ -11,8 +12,10 @@ import pl.wroblewski.helpdeskapp.repositories.DeviceTypeRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
+    private final UserDeviceRepository userDeviceRepository;
 
     public List<Device> getAllDevices(Integer deviceTypeId, String brand, String model, String serialNumber, Integer userId, Integer userAuthorId) throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -67,7 +71,35 @@ public class DeviceService {
         return device;
     }
 
+    @Transactional
+    public void updateDevice(Integer deviceId, Integer userId, String inventoryNumber, Byte isGuarantee, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
+
+        if (!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        if(userId != null) {
+            User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
+
+            Optional<UserDevice> userDevice = userDeviceRepository.findByDeviceAndUser(device, user);
+            userDevice.ifPresent(userDeviceRepository::delete);
+            UserDevice newUserDevice = UserDevice.builder()
+                    .device(device)
+                    .user(user)
+                    .locationOfDevice(user.getRoom() + "")
+                    .build();
+            userDeviceRepository.save(newUserDevice);
+        }
+
+        device.setInventoryNumber(inventoryNumber);
+        device.setIsGuarantee(isGuarantee);
+        deviceRepository.save(device);
+    }
+
     private boolean userHasDevice(User user, Device device) {
         return device.getUserDevices().stream().anyMatch(d -> d.getUser().getUserId() == user.getUserId());
     }
+
 }

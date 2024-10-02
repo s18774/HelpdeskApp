@@ -41,6 +41,12 @@ public class Device {
     @Column(name = "isGuarantee")
     private Byte isGuarantee;//1 means yes, 0 means no
 
+    @Column(name = "ip_addres", nullable = true)
+    private String ipAddress;
+
+    @Column(name = "mac_addres", nullable = true)
+    private String macAddress;
+
     @OneToMany
     @JoinColumn(name="device_id")
     private Set<UserDevice> userDevices;
