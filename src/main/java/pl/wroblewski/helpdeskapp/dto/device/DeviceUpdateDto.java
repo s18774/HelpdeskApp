@@ -14,4 +14,5 @@ public class DeviceUpdateDto {
     private Integer userId;
     private String inventoryNumber;
     private Byte isGuarantee;
+    private String ipAddress;
 }

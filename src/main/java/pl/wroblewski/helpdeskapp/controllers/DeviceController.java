@@ -17,6 +17,7 @@ import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
+import pl.wroblewski.helpdeskapp.models.Device;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserDevice;
 import pl.wroblewski.helpdeskapp.services.DeviceService;
@@ -46,17 +47,13 @@ public class DeviceController extends BaseController {
         var devices = deviceService
                 .getAllDevices(deviceTypeId, brand, model, serialNumber, userId, author.getUserId());
 
-        var devicesDto = devices
-                .stream()
-                .map(d -> modelMapper.map(d, DeviceDto.class))
-                .toList();
+        return ResponseEntity.ok(toDto(devices));
+    }
 
-        devicesDto.forEach(dto -> dto.setFullName(devices.stream()
-                .filter(x -> x.getSerialNumber().equals(dto.getSerialNumber()) && x.getUserDevices() != null)
-                .findFirst().flatMap(first -> first.getUserDevices().stream().findFirst().map(x -> x.getUser().getFullName())).orElse(null)));
-
-
-        return ResponseEntity.ok(devicesDto);
+    @GetMapping("/not-attached")
+    public ResponseEntity<List<DeviceDto>> getDevices(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+        var devices = deviceService.getAllNotAttachedDevices();
+        return ResponseEntity.ok(toDto(devices));
     }
 
     @GetMapping("/types")
@@ -74,7 +71,7 @@ public class DeviceController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
         var newDevice = deviceService.createDevice(deviceCreateDto.getDeviceTypeId(), deviceCreateDto.getBrand(),
                 deviceCreateDto.getModel(), deviceCreateDto.getSerialNumber(), deviceCreateDto.getInventoryNumber(),
-                deviceCreateDto.getGuarantee(), author.getUserId());
+                deviceCreateDto.getGuarantee(), deviceCreateDto.getMacAddress(), author.getUserId());
         return ResponseEntity.ok(modelMapper.map(newDevice, DeviceDto.class));
     }
 
@@ -100,11 +97,24 @@ public class DeviceController extends BaseController {
     public ResponseEntity<BaseResponse> updateDevice(@RequestBody DeviceUpdateDto device, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        deviceService.updateDevice(device.getDeviceId(), device.getUserId(), device.getInventoryNumber(), device.getIsGuarantee(), author.getUserId());
+        deviceService.updateDevice(device.getDeviceId(), device.getUserId(), device.getInventoryNumber(), device.getIsGuarantee(), device.getIpAddress(), author.getUserId());
 
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)
                 .message("Device updated!")
                 .build(), HttpStatus.OK);
+    }
+
+    private List<DeviceDto> toDto(List<Device> devices) {
+        var devicesDto = devices
+                .stream()
+                .map(d -> modelMapper.map(d, DeviceDto.class))
+                .toList();
+
+        devicesDto.forEach(dto -> dto.setFullName(devices.stream()
+                .filter(x -> x.getSerialNumber().equals(dto.getSerialNumber()) && x.getUserDevices() != null)
+                .findFirst().flatMap(first -> first.getUserDevices().stream().findFirst().map(x -> x.getUser().getFullName())).orElse(null)));
+
+        return devicesDto;
     }
 }

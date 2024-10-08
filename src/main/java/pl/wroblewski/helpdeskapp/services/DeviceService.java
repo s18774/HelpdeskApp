@@ -41,7 +41,7 @@ public class DeviceService {
         return (List<DeviceType>) deviceTypeRepository.findAll();
     }
 
-    public Device createDevice(Integer deviceTypeId, String brand, String model, String serialNumber, String inventoryNumber, Boolean isGuarantee,  Integer userAuthorId)
+    public Device createDevice(Integer deviceTypeId, String brand, String model, String serialNumber, String inventoryNumber, Boolean isGuarantee, String macAddress,  Integer userAuthorId)
             throws UserNotExistsException, PermissionsException, EntityNotExists {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if(!RoleType.isAdmin(userAuthor)) {
@@ -55,6 +55,7 @@ public class DeviceService {
                 .brand(brand)
                 .serialNumber(serialNumber)
                 .model(model)
+                .macAddress(macAddress)
                 .dateOfPurchase(LocalDateTime.now())
                 .isGuarantee((byte)(isGuarantee != null && isGuarantee ? 1 : 0))
                 .inventoryNumber(inventoryNumber)
@@ -72,7 +73,7 @@ public class DeviceService {
     }
 
     @Transactional
-    public void updateDevice(Integer deviceId, Integer userId, String inventoryNumber, Byte isGuarantee, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    public void updateDevice(Integer deviceId, Integer userId, String inventoryNumber, Byte isGuarantee, String ipAddress, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
 
@@ -83,9 +84,10 @@ public class DeviceService {
         if(userId != null) {
             User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
 
-            Optional<UserDevice> userDevice = userDeviceRepository.findByDeviceAndUser(device, user);
+            Optional<UserDevice> userDevice = userDeviceRepository.findByDevice(device);
             userDevice.ifPresent(userDeviceRepository::delete);
             UserDevice newUserDevice = UserDevice.builder()
+                    .id(UserDeviceId.builder().userId(userId).deviceId(deviceId).build())
                     .device(device)
                     .user(user)
                     .locationOfDevice(user.getRoom() + "")
@@ -95,7 +97,12 @@ public class DeviceService {
 
         device.setInventoryNumber(inventoryNumber);
         device.setIsGuarantee(isGuarantee);
+        device.setIpAddress(ipAddress);
         deviceRepository.save(device);
+    }
+
+    public List<Device> getAllNotAttachedDevices() {
+        return deviceRepository.getAllNotAttached();
     }
 
     private boolean userHasDevice(User user, Device device) {

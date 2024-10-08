@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface UserDeviceRepository extends CrudRepository<UserDevice, UserDeviceId> {
 
-    Optional<UserDevice> findByDeviceAndUser(Device device, User user);
+    Optional<UserDevice> findByDevice(Device device);
 
     //możemy wpisać device_id i znaleźć do kogo należy urządzenie lub wpisać user_id i sprawdzić listę wszystkich urządzeń na stanie usera
 

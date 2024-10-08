@@ -15,4 +15,5 @@ public class DeviceCreateDto {
     private String serialNumber;
     private Boolean guarantee;
     private String inventoryNumber;
+    private String macAddress;
 }

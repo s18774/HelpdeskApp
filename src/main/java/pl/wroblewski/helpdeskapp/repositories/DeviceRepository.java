@@ -21,4 +21,9 @@ public interface DeviceRepository extends CrudRepository<Device, Integer> {
                                                                                        @Param("model") String model,
                                                                                        @Param("serialNumber") String serialNumber,
                                                                                        @Param("userId") Integer userId);
+
+    @Query("SELECT d from Device d " +
+            "LEFT JOIN UserDevice ud ON d.deviceId =ud.id.deviceId " +
+            "WHERE ud.user IS NULL")
+    public List<Device> getAllNotAttached();
 }
