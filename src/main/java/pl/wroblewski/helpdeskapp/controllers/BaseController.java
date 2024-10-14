@@ -10,7 +10,9 @@ import pl.wroblewski.helpdeskapp.exceptions.*;
 import pl.wroblewski.helpdeskapp.models.User;
 
 public class BaseController {
-    @ExceptionHandler({EntityNotExists.class, UserNotExistsException.class, PermissionsException.class, InvalidRoleException.class})
+    @ExceptionHandler({EntityNotExists.class, UserNotExistsException.class,
+            PermissionsException.class, InvalidRoleException.class,
+            DeviceAlreadyAttachedException.class})
     public ResponseEntity<BaseResponse> handleException(Exception ex) {
         BaseResponse response = BaseResponse
                 .builder()

@@ -9,11 +9,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceTypeDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceUpdateDto;
+import pl.wroblewski.helpdeskapp.dto.device.*;
 import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
+import pl.wroblewski.helpdeskapp.exceptions.DeviceAlreadyAttachedException;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -105,15 +103,35 @@ public class DeviceController extends BaseController {
                 .build(), HttpStatus.OK);
     }
 
+    @PostMapping("/attach")
+    public ResponseEntity<BaseResponse> attachDevice(@RequestBody DeviceAttachDto deviceAttach, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, DeviceAlreadyAttachedException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+
+        deviceService.attachDevice(deviceAttach.getUserId(), deviceAttach.getDeviceId(), author.getUserId());
+        return new ResponseEntity<>(BaseResponse.builder()
+                .success(true)
+                .message("Device attached!")
+                .build(), HttpStatus.OK);
+    }
+
     private List<DeviceDto> toDto(List<Device> devices) {
         var devicesDto = devices
                 .stream()
                 .map(d -> modelMapper.map(d, DeviceDto.class))
                 .toList();
 
-        devicesDto.forEach(dto -> dto.setFullName(devices.stream()
-                .filter(x -> x.getSerialNumber().equals(dto.getSerialNumber()) && x.getUserDevices() != null)
-                .findFirst().flatMap(first -> first.getUserDevices().stream().findFirst().map(x -> x.getUser().getFullName())).orElse(null)));
+        for(var dto : devicesDto) {
+            var dev = devices.stream()
+                    .filter(x -> x.getSerialNumber().equals(dto.getSerialNumber()) && x.getUserDevices() != null).findFirst();
+            if(dev.isPresent()) {
+                var userDevices = dev.get().getUserDevices();
+                if(userDevices != null && !userDevices.isEmpty()) {
+                    var user = userDevices.stream().findAny().get().getUser();
+                    dto.setFullName(user.getFullName());
+                    dto.setUserId(user.getUserId());
+                }
+            }
+        }
 
         return devicesDto;
     }

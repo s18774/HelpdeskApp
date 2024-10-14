@@ -3,6 +3,7 @@ package pl.wroblewski.helpdeskapp.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wroblewski.helpdeskapp.exceptions.DeviceAlreadyAttachedException;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -105,8 +106,29 @@ public class DeviceService {
         return deviceRepository.getAllNotAttached();
     }
 
+    public void attachDevice(Integer userId, Integer deviceId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException, DeviceAlreadyAttachedException {
+        User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        if(!RoleType.isAdmin(userAuthor)) {
+            throw new PermissionsException();
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
+        Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
+
+        Optional<UserDevice> userDevice = userDeviceRepository.findByDevice(device);
+        if(userDevice.isPresent()) {
+            throw new DeviceAlreadyAttachedException();
+        }
+        UserDevice newUserDevice = UserDevice.builder()
+                .id(UserDeviceId.builder().userId(userId).deviceId(deviceId).build())
+                .device(device)
+                .user(user)
+                .locationOfDevice(user.getRoom() + "")
+                .build();
+        userDeviceRepository.save(newUserDevice);
+    }
+
     private boolean userHasDevice(User user, Device device) {
         return device.getUserDevices().stream().anyMatch(d -> d.getUser().getUserId() == user.getUserId());
     }
-
 }

@@ -15,7 +15,7 @@ public interface DeviceRepository extends CrudRepository<Device, Integer> {
             "AND (:brand IS NULL OR d.brand LIKE %:brand%) " +
             "AND (:model IS NULL OR d.model LIKE %:model%) " +
             "AND (:serialNumber IS NULL OR d.model LIKE %:serialNumber%) " +
-            "AND (:userId IS NULL OR ud.id.deviceId = :userId) ")
+            "AND (:userId IS NULL OR ud.id.userId = :userId) ")
     public List<Device> findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(@Param("deviceTypeId") Integer deviceTypeId,
                                                                                        @Param("brand") String brand,
                                                                                        @Param("model") String model,
