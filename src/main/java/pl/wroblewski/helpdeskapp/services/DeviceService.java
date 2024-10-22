@@ -94,6 +94,9 @@ public class DeviceService {
                     .locationOfDevice(user.getRoom() + "")
                     .build();
             userDeviceRepository.save(newUserDevice);
+        } else {
+            Optional<UserDevice> userDevice = userDeviceRepository.findByDevice(device);
+            userDevice.ifPresent(userDeviceRepository::delete);
         }
 
         device.setInventoryNumber(inventoryNumber);

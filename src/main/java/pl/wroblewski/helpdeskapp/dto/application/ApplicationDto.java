@@ -24,4 +24,5 @@ public class ApplicationDto {
     private Integer helpdeskId;
     private Integer groupId;
     private Integer stageId;
+    private Integer userId;
 }

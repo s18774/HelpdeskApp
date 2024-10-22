@@ -19,4 +19,5 @@ public class TicketDto {
     private String fullName;
     private Integer stageId;
     private Integer helpdeskId;
+    private Integer userId;
 }

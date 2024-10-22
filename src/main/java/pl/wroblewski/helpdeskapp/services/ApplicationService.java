@@ -124,7 +124,10 @@ public class ApplicationService {
         }
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
-        Group group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        Group group = null;
+        if(groupId != null) {
+            group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        }
 
         User helpdesk = null;
         if(helpdeskId != null){
