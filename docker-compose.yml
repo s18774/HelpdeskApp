@@ -2,29 +2,32 @@ version: '3.8'
 
 services:
   app:
-    image: 'docker-spring-boot-postgres:latest'
-    build:
-      context: .
+    build: "."
     container_name: app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://db;database=HelpDeskApp;verifyServerCertificate=false;useSSL=false;encrypt=false;
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: Admin1234
     depends_on:
       - db
-    environment:
-      - POSTGRES_USER=$YOUR_USERNAME
-      - POSTGRES_PASSWORD=$YOUR_PASSWORD
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/$YOUR_DB_NAME
-      - SPRING_DATASOURCE_USERNAME=$YOUR_USERNAME
-      - SPRING_DATASOURCE_PASSWORD=$YOUR_PASSWORD
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
     ports:
-      - "$LOCAL_PORT:$DOCKER_PORT"
+      - "8080:8080"
+    networks:
+      - app-network
 
   db:
-    image: postgres
-    container_name: db
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      - POSTGRES_USER=$YOUR_USERNAME
-      - POSTGRES_PASSWORD=$YOUR_PASSWORD
-      - POSTGRES_DB=$YOUR_DB_NAME
+      - SA_PASSWORD=Admin1234
+      - MSSQL_SA_PASSWORD=Admin1234
+      - ACCEPT_EULA=Y
+      - MSSQL_DB=HelpDeskApp
     ports:
-      - "$LOCAL_PORT:$DOCKER_PORT"
+      - "1434:1433"
+    networks:
+      - app-network
+    command: /bin/bash -c " /opt/mssql/bin/sqlservr & sleep 5 && /opt/mssql-tools18/bin/sqlcmd -S db -U sa -P Admin1234 -Q 'CREATE DATABASE HelpDeskApp;' && wait"
+
+networks:
+  app-network:
+    driver: bridge
