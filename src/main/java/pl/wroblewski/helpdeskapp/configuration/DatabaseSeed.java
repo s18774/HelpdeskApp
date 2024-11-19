@@ -3,6 +3,7 @@ package pl.wroblewski.helpdeskapp.configuration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
@@ -21,16 +22,17 @@ public class DatabaseSeed {
     private final ExperienceLevelRepository experienceLevelRepository;
     private final SLARepository slaRepository;
     private final StageRepository stageRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public void seedData() {
         seedRoles();
         seedGroups();
         seedDepartments();
+        seedExperienceLevels();
         seedUsers();
         seedDeviceTypes();
         seedDevices();
-        seedExperienceLevels();
         seedSLA();
         seedStages();
     }
@@ -67,17 +69,18 @@ public class DatabaseSeed {
                 User.builder()
                         .email("admin@gmail.com")
                         .positionName("IT")
-                        .password("admin")
+                        .password(passwordEncoder.encode("admin"))
                         .username("admin")
-                        .userId(1)
-                        .firstName("admin")
-                        .secondName("admin")
+                        .firstName("Jan")
+                        .secondName("Kowalski")
+                        .experienceLevel(experienceLevelRepository.findById(1).get())
                         .floor(1)
+                        .role(roleRepository.findById(3).get())
                         .employmentDate(LocalDate.now())
                         .build()
         };
         for (var user : users) {
-            if (!userRepository.existsById(user.getUserId())) {
+            if (!userRepository.existsByUsername(user.getUsername())) {
                 userRepository.save(user);
             }
         }

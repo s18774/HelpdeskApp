@@ -23,4 +23,5 @@ public class UserDetailsDto {
     private String email;
     private Integer floor;
     private Integer room;
+    private Integer experienceLevelId;
 }

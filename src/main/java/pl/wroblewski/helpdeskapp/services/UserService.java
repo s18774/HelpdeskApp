@@ -1,6 +1,7 @@
 package pl.wroblewski.helpdeskapp.services;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.wroblewski.helpdeskapp.exceptions.*;
 import pl.wroblewski.helpdeskapp.models.*;
-import pl.wroblewski.helpdeskapp.repositories.DepartmentRepository;
-import pl.wroblewski.helpdeskapp.repositories.GroupRepository;
-import pl.wroblewski.helpdeskapp.repositories.RoleRepository;
-import pl.wroblewski.helpdeskapp.repositories.UserRepository;
+import pl.wroblewski.helpdeskapp.repositories.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +26,7 @@ public class UserService implements UserDetailsService {
     private final GroupRepository groupRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExperienceLevelRepository experienceLevelRepository;
 
     public void authUser(String login, String password) throws InvalidCredentialsException {
         User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
@@ -76,7 +75,7 @@ public class UserService implements UserDetailsService {
         return users;
     }
 
-    public User createUser(User newUser, Integer groupId, Integer departmentId, Integer supervisorId, Integer roleId, Integer userAuthorId)
+    public User createUser(User newUser, Integer groupId, Integer departmentId, Integer supervisorId, Integer roleId, Integer experienceLevelId, Integer userAuthorId)
             throws UserNotExistsException, PermissionsException, EntityNotExists, InvalidRoleException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if (!RoleType.isAdmin(userAuthor)) {
@@ -93,6 +92,8 @@ public class UserService implements UserDetailsService {
             supervisor = userRepository.findById(supervisorId).orElseThrow(() -> new EntityNotExists(User.class));
         }
 
+        ExperienceLevel experienceLevel = experienceLevelRepository.findById(experienceLevelId).orElseThrow(() -> new EntityNotExists(ExperienceLevel.class));
+
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
 
@@ -107,6 +108,7 @@ public class UserService implements UserDetailsService {
         newUser.setDepartmentId(department);
         newUser.setSupervisor(supervisor);
         newUser.setRole(role);
+        newUser.setExperienceLevel(experienceLevel);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
         return userRepository.save(newUser);
@@ -114,6 +116,10 @@ public class UserService implements UserDetailsService {
 
     public List<Role> getAllRoles() {
         return (List<Role>)roleRepository.findAll();
+    }
+
+    public List<ExperienceLevel> getAllExperienceLevels() {
+        return (List<ExperienceLevel>)experienceLevelRepository.findAll();
     }
 
     public User getUser(Integer userId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
@@ -132,7 +138,9 @@ public class UserService implements UserDetailsService {
                            Integer supervisorId, Integer departmentId,
                            Integer roleId, String phoneNumber,
                            String email, Integer floor,
-                           Integer room, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
+                           Integer room,
+                           Integer experienceLevelId,
+                           Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if(!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
@@ -148,6 +156,8 @@ public class UserService implements UserDetailsService {
         if(departmentId != null) {
             department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         }
+
+        ExperienceLevel experienceLevel = experienceLevelRepository.findById(experienceLevelId).orElseThrow(() -> new EntityNotExists(ExperienceLevel.class));
 
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
 
@@ -167,6 +177,7 @@ public class UserService implements UserDetailsService {
         user.setEmail(email);
         user.setFloor(floor);
         user.setRoom(room);
+        user.setExperienceLevel(experienceLevel);
         user.setUsername(username);
 
         userRepository.save(user);

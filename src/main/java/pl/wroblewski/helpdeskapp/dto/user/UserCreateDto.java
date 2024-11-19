@@ -23,4 +23,5 @@ public class UserCreateDto {
     private Integer userId;
     private Integer roleId;
     private String password;
+    private Integer experienceLevelId;
 }

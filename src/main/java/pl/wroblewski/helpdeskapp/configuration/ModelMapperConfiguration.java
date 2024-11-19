@@ -102,6 +102,7 @@ public class ModelMapperConfiguration {
                     mapper.map(User::getEmail, UserDetailsDto::setEmail);
                     mapper.map(User::getFloor, UserDetailsDto::setFloor);
                     mapper.map(User::getRoom, UserDetailsDto::setRoom);
+                    mapper.map(u -> u.getExperienceLevel().getExpId(), UserDetailsDto::setExperienceLevelId);
                 });
     }
 

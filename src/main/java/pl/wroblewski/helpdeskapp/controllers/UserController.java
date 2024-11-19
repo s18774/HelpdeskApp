@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
+import pl.wroblewski.helpdeskapp.dto.ExperienceLevelDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
 import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
 import pl.wroblewski.helpdeskapp.dto.role.RoleDto;
@@ -75,7 +76,7 @@ public class UserController extends BaseController {
             throws EntityNotExists, UserNotExistsException, PermissionsException, InvalidRoleException {
         User author = userService.getUser(userDetails.getUsername());
         User newUser = modelMapper.map(userCreateDto, User.class);
-        newUser = userService.createUser(newUser, userCreateDto.getGroupId(), userCreateDto.getDepartmentId(), userCreateDto.getUserId(), userCreateDto.getRoleId(), author.getUserId());
+        newUser = userService.createUser(newUser, userCreateDto.getGroupId(), userCreateDto.getDepartmentId(), userCreateDto.getUserId(), userCreateDto.getRoleId(), userCreateDto.getExperienceLevelId(), author.getUserId());
         return ResponseEntity.ok(modelMapper.map(newUser, UserDto.class));
     }
 
@@ -86,6 +87,15 @@ public class UserController extends BaseController {
                 .map(role -> modelMapper.map(role, RoleDto.class))
                 .toList();
         return ResponseEntity.ok(roles);
+    }
+
+    @GetMapping("/experience-levels")
+    public ResponseEntity<List<ExperienceLevelDto>> getAllExperienceLevels(@AuthenticationPrincipal UserDetails userDetails) {
+        var experienceLevels = userService.getAllExperienceLevels()
+                .stream()
+                .map(exp -> modelMapper.map(exp, ExperienceLevelDto.class))
+                .toList();
+        return ResponseEntity.ok(experienceLevels);
     }
 
     @PutMapping
@@ -106,6 +116,7 @@ public class UserController extends BaseController {
                 user.getEmail(),
                 user.getFloor(),
                 user.getRoom(),
+                user.getExperienceLevelId(),
                 author.getUserId());
 
         return new ResponseEntity<>(BaseResponse.builder()

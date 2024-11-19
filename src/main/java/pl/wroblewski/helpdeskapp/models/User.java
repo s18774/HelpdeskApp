@@ -64,6 +64,10 @@ public class User {
     @JoinColumn(name = "group_id")
     private Group group;
 
+    @ManyToOne
+    @JoinColumn(name = "exp_id")
+    private ExperienceLevel experienceLevel;
+
     public String getFullName() {
         return firstName + " " + secondName;
     }

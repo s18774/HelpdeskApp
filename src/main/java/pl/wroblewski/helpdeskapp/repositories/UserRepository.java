@@ -40,4 +40,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     List<User> findAllByGroup(Group group);
     Optional<User> findByUserIdAndGroup(Integer userId, Group group);
+    boolean existsByUsername(String username);
 }
