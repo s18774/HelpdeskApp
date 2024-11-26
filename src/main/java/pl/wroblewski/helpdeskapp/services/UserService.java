@@ -27,6 +27,7 @@ public class UserService implements UserDetailsService {
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final ExperienceLevelRepository experienceLevelRepository;
+    private final LogsService logsService;
 
     public void authUser(String login, String password) throws InvalidCredentialsException {
         User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
@@ -111,7 +112,13 @@ public class UserService implements UserDetailsService {
         newUser.setExperienceLevel(experienceLevel);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
-        return userRepository.save(newUser);
+        newUser = userRepository.save(newUser);
+        logsService.log(String.format("%s (%d) crated user: %s (%d)",
+                userAuthor.getFullName(),
+                userAuthor.getUserId(),
+                newUser.getFullName(),
+                newUser.getUserId()));
+        return newUser;
     }
 
     public List<Role> getAllRoles() {
