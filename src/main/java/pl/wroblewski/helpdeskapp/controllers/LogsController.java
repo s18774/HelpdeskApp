@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.wroblewski.helpdeskapp.dto.ExperienceLevelDto;
 import pl.wroblewski.helpdeskapp.dto.LogsDto;
+import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
+import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
+import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.services.LogsService;
+import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.List;
 
@@ -22,11 +26,12 @@ import java.util.List;
 public class LogsController extends BaseController {
     private final LogsService logsService;
     private final ModelMapper modelMapper;
-
+    private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<LogsDto>> getAllLogs(@AuthenticationPrincipal UserDetails userDetails) {
-        var logs = logsService.getAllLogs()
+    public ResponseEntity<List<LogsDto>> getAllLogs(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+        User author = userService.getUser(userDetails.getUsername());
+        var logs = logsService.getAllLogs(author.getUserId())
                 .stream()
                 .map(exp -> modelMapper.map(exp, LogsDto.class))
                 .toList();
