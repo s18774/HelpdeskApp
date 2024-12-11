@@ -29,6 +29,7 @@ public class DeviceService {
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final UserDeviceRepository userDeviceRepository;
+    private final LogsService logsService;
 
     public List<Device> getAllDevices(Integer deviceTypeId, String brand, String model, String serialNumber, Integer userId, Integer userAuthorId) throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -51,7 +52,7 @@ public class DeviceService {
 
         DeviceType deviceType = deviceTypeRepository.findById(deviceTypeId).orElseThrow(() -> new EntityNotExists(DeviceType.class));
 
-        return deviceRepository.save(Device.builder()
+        Device device = deviceRepository.save(Device.builder()
                 .deviceType(deviceType)
                 .brand(brand)
                 .serialNumber(serialNumber)
@@ -61,6 +62,14 @@ public class DeviceService {
                 .isGuarantee((byte)(isGuarantee != null && isGuarantee ? 1 : 0))
                 .inventoryNumber(inventoryNumber)
                 .build());
+
+        logsService.log(String.format("%s (%d) created device %s (%s)",
+                userAuthor.getFullName(),
+                userAuthorId,
+                device.getModel() + " " + device.getBrand(),
+                device.getSerialNumber()));
+
+        return device;
     }
 
     public Device getDevice(Integer deviceId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
@@ -103,6 +112,12 @@ public class DeviceService {
         device.setIsGuarantee(isGuarantee);
         device.setIpAddress(ipAddress);
         deviceRepository.save(device);
+
+        logsService.log(String.format("%s (%d) updated device %s (%s)",
+                userAuthor.getFullName(),
+                userAuthorId,
+                device.getModel() + " " + device.getBrand(),
+                device.getSerialNumber()));
     }
 
     public List<Device> getAllNotAttachedDevices() {
@@ -129,6 +144,14 @@ public class DeviceService {
                 .locationOfDevice(user.getRoom() + "")
                 .build();
         userDeviceRepository.save(newUserDevice);
+
+        logsService.log(String.format("%s (%d) attached device %s (%s) to user %s (%d)",
+                userAuthor.getFullName(),
+                userAuthorId,
+                device.getModel() + " " + device.getBrand(),
+                device.getSerialNumber(),
+                user.getFullName(),
+                user.getUserId()));
     }
 
     private boolean userHasDevice(User user, Device device) {

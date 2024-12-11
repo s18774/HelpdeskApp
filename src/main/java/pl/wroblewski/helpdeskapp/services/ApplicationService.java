@@ -19,9 +19,9 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
     private final SLARepository slaRepository;
-    private final DepartmentRepository departmentRepository;
     private final GroupRepository groupRepository;
     private final StageRepository stageRepository;
+    private final LogsService logsService;
 
     //to do list
 
@@ -82,6 +82,9 @@ public class ApplicationService {
                 .helpDeskId(helpdesk)
                 .build();
         userApplicationRepository.save(userApplication);
+
+        logsService.log(String.format("%s (%d) created application (%d)", user.getFullName(), user.getUserId(), application.getApplicationId()));
+
     }
 
     private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
@@ -151,6 +154,9 @@ public class ApplicationService {
         userApplication.setHelpDeskId(helpdesk);
         userApplication.setGroupId(group);
         userApplicationRepository.save(userApplication);
+
+        logsService.log(String.format("%s (%d) updated application (%d)", userAuthor.getFullName(), userAuthor.getUserId(), application.getApplicationId()));
+
     }
 
     public void closeApplication(Integer applicationId, Integer userAuthorId) throws EntityNotExists, PermissionsException, UserNotExistsException {
@@ -170,6 +176,9 @@ public class ApplicationService {
         userApplication.setClosingDate(LocalDate.now());
         userApplication.setResolverUser(userAuthor);
         userApplicationRepository.save(userApplication);
+
+        logsService.log(String.format("%s (%d) closed application (%d)", userAuthor.getFullName(), userAuthor.getUserId(), userApplication.getId().getApplicationId()));
+
     }
 
 }

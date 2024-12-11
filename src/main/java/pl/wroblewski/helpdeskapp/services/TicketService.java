@@ -36,6 +36,7 @@ public class TicketService {
     private final DepartmentRepository departmentRepository;
     private final GroupRepository groupRepository;
     private final StageRepository stageRepository;
+    private final LogsService logsService;
 
 
     public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId, Integer stageId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
@@ -96,6 +97,8 @@ public class TicketService {
                 .stageId(stage)
                 .build();
         userTicketRepository.save(userTicket);
+
+        logsService.log(String.format("%s (%d) created ticket (%d)", user.getFullName(), user.getUserId(), ticket.getTicketId()));
     }
 
     public UserTicket getTicket(Integer ticketId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
@@ -160,6 +163,9 @@ public class TicketService {
         }
         userTicket.setHelpDeskId(helpdesk);
         userTicketRepository.save(userTicket);
+
+        logsService.log(String.format("%s (%d) updated ticket (%d)", userAuthor.getFullName(), userAuthor.getUserId(), ticket.getTicketId()));
+
     }
 
     public void closeTicket(Integer ticketId, Integer userAuthorId) throws EntityNotExists, PermissionsException, UserNotExistsException {
@@ -179,6 +185,9 @@ public class TicketService {
         userTicket.setClosingDate(LocalDate.now());
         userTicket.setResolverUser(userAuthor);
         userTicketRepository.save(userTicket);
+
+        logsService.log(String.format("%s (%d) closed ticket (%d)", userAuthor.getFullName(), userAuthor.getUserId(), userTicket.getId().getTicketId()));
+
     }
 }
 

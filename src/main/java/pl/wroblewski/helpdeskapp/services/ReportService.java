@@ -23,6 +23,7 @@ public class ReportService {
     private final UserTicketRepository userTicketRepository;
     private final UserRepository userRepository;
     private final PdfUtil pdfUtil;
+    private final LogsService logsService;
 
     public byte[] getHelpdeskReport(LocalDate dateFrom, LocalDate dateTo, Integer helpdeskId, String jobType,
                                     Integer userAuthorId) throws UserNotExistsException, PermissionsException {
@@ -101,6 +102,10 @@ public class ReportService {
         }
 
         sb.append("</tbody></table>");
-        return pdfUtil.toPdf(sb.toString());
+        byte[] reportBytes = pdfUtil.toPdf(sb.toString());
+
+        logsService.log(String.format("%s (%d) created report", userAuthor.getFullName(), userAuthor.getUserId()));
+
+        return reportBytes;
     }
 }

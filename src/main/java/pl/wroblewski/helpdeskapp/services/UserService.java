@@ -29,11 +29,6 @@ public class UserService implements UserDetailsService {
     private final ExperienceLevelRepository experienceLevelRepository;
     private final LogsService logsService;
 
-    public void authUser(String login, String password) throws InvalidCredentialsException {
-        User user = userRepository.findByUsername(login).orElseThrow(InvalidCredentialsException::new);
-        //dalsze porowanie hasla itp
-        //sprawdzanie do jakiego role należy login
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -188,5 +183,11 @@ public class UserService implements UserDetailsService {
         user.setUsername(username);
 
         userRepository.save(user);
+
+        logsService.log(String.format("%s (%d) updated user: %s (%d)",
+                userAuthor.getFullName(),
+                userAuthor.getUserId(),
+                user.getFullName(),
+                user.getUserId()));
     }
 }

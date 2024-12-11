@@ -18,6 +18,7 @@ import java.util.Optional;
 public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+    private final LogsService logsService;
 
     public List<Group> getAllGroups() {
         return (List<Group>)groupRepository.findAll();
@@ -29,10 +30,12 @@ public class GroupService {
             throw new PermissionsException();
         }
 
-        return groupRepository.save(Group.builder()
+        Group newGroup = groupRepository.save(Group.builder()
                 .groupName(groupName)
                 .isGroupActive((byte)1)
                 .build());
+        logsService.log(String.format("%s (%d) created group %s (%d)", userAuthor.getFullName(), userAuthorId, groupName, newGroup.getGroupId()));
+        return newGroup;
     }
 
     public Group getGroup(Integer groupId, Integer userAuthorId) throws UserNotExistsException, PermissionsException, EntityNotExists {
@@ -65,6 +68,14 @@ public class GroupService {
         User user = userRepository.findByUserIdAndGroup(userId, group).orElseThrow(UserNotExistsException::new);
         user.setGroup(null);
         userRepository.save(user);
+
+        logsService.log(String.format("%s (%d) removed user %s (%d) from group %s (%d)",
+                userAuthor.getFullName(),
+                userAuthor.getUserId(),
+                user.getFullName(),
+                user.getUserId(),
+                group.getGroupName(),
+                group.getGroupId()));
     }
 
     public void addUser(Integer groupId, Integer userId, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
@@ -76,6 +87,14 @@ public class GroupService {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         user.setGroup(group);
         userRepository.save(user);
+
+        logsService.log(String.format("%s (%d) added user %s (%d) to group %s (%d)",
+                userAuthor.getFullName(),
+                userAuthor.getUserId(),
+                user.getFullName(),
+                user.getUserId(),
+                group.getGroupName(),
+                group.getGroupId()));
     }
 
     public void updateGroup(Integer groupId, String groupName, Byte isGroupActive, Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
@@ -89,5 +108,8 @@ public class GroupService {
         group.setGroupName(groupName);
         group.setIsGroupActive(isGroupActive);
         groupRepository.save(group);
+
+        logsService.log(String.format("%s (%d) updated group %s (%d)", userAuthor.getFullName(), userAuthorId, groupName, group.getGroupId()));
+
     }
 }
