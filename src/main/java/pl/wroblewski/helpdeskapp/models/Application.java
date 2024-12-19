@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Application {//application aka wniosek xD, idk jak to przetłumaczyć lepiej
+public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "application_id")

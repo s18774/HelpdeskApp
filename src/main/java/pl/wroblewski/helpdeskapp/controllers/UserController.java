@@ -10,11 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.ExperienceLevelDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceCreateDto;
-import pl.wroblewski.helpdeskapp.dto.device.DeviceDto;
 import pl.wroblewski.helpdeskapp.dto.role.RoleDto;
-import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
-import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserCreateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDto;
@@ -24,7 +20,6 @@ import pl.wroblewski.helpdeskapp.exceptions.InvalidRoleException;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
-import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
 import java.util.List;
@@ -40,9 +35,13 @@ public class UserController extends BaseController {
 
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+    public ResponseEntity<List<UserDto>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException {
         User author = userService.getUser(userDetails.getUsername());
-        var users = userService.getAllUsers(author.getUserId()).stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+        var users = userService.getAllUsers(author.getUserId())
+                .stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .toList();
         return ResponseEntity.ok(users);
     }
 
@@ -51,14 +50,19 @@ public class UserController extends BaseController {
                                                                     @PathParam("secondName") String secondName,
                                                                     @PathParam("positionName") String positionName,
                                                                     @PathParam("groupName") String groupName,
-                                                                    @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+                                                                    @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
-        var users = userService.getAllUsersDetails(firstName, secondName, positionName, groupName, author.getUserId()).stream().map(user -> modelMapper.map(user, UserDetailsDto.class)).toList();
+        var users = userService.getAllUsersDetails(firstName, secondName, positionName, groupName, author.getUserId())
+                .stream().map(user -> modelMapper.map(user, UserDetailsDto.class))
+                .toList();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("{userId}")
-    public ResponseEntity<UserDetailsDto> getUser(@PathVariable Integer userId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<UserDetailsDto> getUser(@PathVariable Integer userId,
+                                                  @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         User user = userService.getUser(userId, author.getUserId());
         return ResponseEntity.ok(modelMapper.map(user, UserDetailsDto.class));
@@ -72,16 +76,18 @@ public class UserController extends BaseController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserCreateDto userCreateDto,
-                                                  @AuthenticationPrincipal UserDetails userDetails)
+                                              @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotExists, UserNotExistsException, PermissionsException, InvalidRoleException {
         User author = userService.getUser(userDetails.getUsername());
         User newUser = modelMapper.map(userCreateDto, User.class);
-        newUser = userService.createUser(newUser, userCreateDto.getGroupId(), userCreateDto.getDepartmentId(), userCreateDto.getUserId(), userCreateDto.getRoleId(), userCreateDto.getExperienceLevelId(), author.getUserId());
-        return ResponseEntity.ok(modelMapper.map(newUser, UserDto.class));
+        newUser = userService.createUser(newUser, userCreateDto.getGroupId(), userCreateDto.getDepartmentId(),
+                userCreateDto.getUserId(), userCreateDto.getRoleId(), userCreateDto.getExperienceLevelId(),
+                author.getUserId());
+        return new ResponseEntity<>(modelMapper.map(newUser, UserDto.class), HttpStatus.CREATED);
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<List<RoleDto>> getAllRoles(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException {
+    public ResponseEntity<List<RoleDto>> getAllRoles() {
         var roles = userService.getAllRoles()
                 .stream()
                 .map(role -> modelMapper.map(role, RoleDto.class))
@@ -90,7 +96,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/experience-levels")
-    public ResponseEntity<List<ExperienceLevelDto>> getAllExperienceLevels(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<ExperienceLevelDto>> getAllExperienceLevels() {
         var experienceLevels = userService.getAllExperienceLevels()
                 .stream()
                 .map(exp -> modelMapper.map(exp, ExperienceLevelDto.class))
@@ -99,7 +105,9 @@ public class UserController extends BaseController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updateUser(@RequestBody UserUpdateDto user, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> updateUser(@RequestBody UserUpdateDto user,
+                                                   @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         userService.updateUser(
@@ -119,9 +127,9 @@ public class UserController extends BaseController {
                 user.getExperienceLevelId(),
                 author.getUserId());
 
-        return new ResponseEntity<>(BaseResponse.builder()
+        return ResponseEntity.ok(BaseResponse.builder()
                 .success(true)
                 .message("User created!")
-                .build(), HttpStatus.CREATED);
+                .build());
     }
 }

@@ -1,7 +1,10 @@
 package pl.wroblewski.helpdeskapp.services;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -23,29 +26,23 @@ public class ApplicationService {
     private final StageRepository stageRepository;
     private final LogsService logsService;
 
-    //to do list
 
-    //pobieranie listy wniosków
-    //pobieranie wniosków o konkretnym statusie/otwarte zamknięte
-    //pobieranie wniosków dla konkretnego użytkownika
-    //pobieranie wniosków z konkretnym sla(ważnością wykonania)
-    //pobieranie wniosków z danego przedziału czasu od - do
-    //
-    //tworzenie wniosku(wniosek może stworzyć zalogowany użytkownik, helpdesk, admin)
-    //zamykanie wniosku(helpdesk, admin)
-    //nadawanie sla do wniosku(helpdesk, admin)
-    //przypisanie konkretnego pracownika do wniosku(może to zrobić tylko admin)
-    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId, Integer stageId, Integer userAuthorId) throws UserNotExistsException {
+    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId,
+                                                    Integer stageId, Integer userAuthorId)
+            throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if(RoleType.isUser(userAuthor)) {
+        if (RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return userApplicationRepository.findByApplicationIdAndUserIdAndSlaIdAndStageId(applicationId, userId, slaId, stageId);
+        return userApplicationRepository.findByApplicationIdAndUserIdAndSlaIdAndStageId(applicationId,
+                userId, slaId, stageId);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void addApplication(Integer slaId, String subject, String description, Integer userId,
-                               Integer userAuthorId, Integer helpdeskId, Integer groupId) throws UserNotExistsException, PermissionsException, EntityNotExists {
+                               Integer userAuthorId, Integer helpdeskId, Integer groupId)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
@@ -83,61 +80,51 @@ public class ApplicationService {
                 .build();
         userApplicationRepository.save(userApplication);
 
-        logsService.log(String.format("%s (%d) created application (%d)", user.getFullName(), user.getUserId(), application.getApplicationId()));
-
+        logsService.log(String.format("%s (%d) created application (%d)", user.getFullName(),
+                user.getUserId(), application.getApplicationId()));
     }
 
-    private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
-            throws PermissionsException {
-
-        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
-            if (user.getUserId() != userAuthor.getUserId() || slaId != null) {
-                throw new PermissionsException();
-            }
-        }
-        if(!RoleType.isAdmin(userAuthor)) {
-            if(helpdeskId != null || groupId != null) {
-                throw new PermissionsException();
-            }
-        }
-
-    }
-
-    public UserApplication getApplication(Integer applicationId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    public UserApplication getApplication(Integer applicationId, Integer userAuthorId)
+            throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId)
+                .orElseThrow(() -> new EntityNotExists(UserTicket.class));
 
-        if(RoleType.isUser(userAuthor) && !Objects.equals(userApplication.getId().getUserId(), userAuthorId)) {
+        if (RoleType.isUser(userAuthor) && !Objects.equals(userApplication.getId().getUserId(), userAuthorId)) {
             throw new PermissionsException();
         }
         return userApplication;
     }
 
-    public void updateApplication(Integer applicationId, Integer slaId, Integer stageId, String subject, String description, Integer groupId, Integer helpdeskId, Integer userAuthorId) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void updateApplication(Integer applicationId, Integer slaId, Integer stageId, String subject,
+                                  String description, Integer groupId, Integer helpdeskId, Integer userAuthorId)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        UserApplication userApplication = userApplicationRepository
+                .findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
 
         if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
 
         Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
-        if(stage.getStageName().equals("Closed")) {
+        if (stage.getStageName().equals("Closed")) {
             throw new PermissionsException();
         }
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
         Group group = null;
-        if(groupId != null) {
+        if (groupId != null) {
             group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
 
         User helpdesk = null;
-        if(helpdeskId != null){
+        if (helpdeskId != null) {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
 
-        if(!RoleType.isAdmin(userAuthor) && helpdesk != userApplication.getHelpDeskId()) {
+        if (!RoleType.isAdmin(userAuthor) && helpdesk != userApplication.getHelpDeskId()) {
             throw new PermissionsException();
         }
 
@@ -148,26 +135,29 @@ public class ApplicationService {
         applicationRepository.save(application);
 
         userApplication.setStageId(stage);
-        if(stage.getStageName().equals("Closed")) {
+        if (stage.getStageName().equals("Closed")) {
             userApplication.setClosingDate(LocalDate.now());
         }
         userApplication.setHelpDeskId(helpdesk);
         userApplication.setGroupId(group);
         userApplicationRepository.save(userApplication);
 
-        logsService.log(String.format("%s (%d) updated application (%d)", userAuthor.getFullName(), userAuthor.getUserId(), application.getApplicationId()));
-
+        logsService.log(String.format("%s (%d) updated application (%d)", userAuthor.getFullName(),
+                userAuthor.getUserId(), application.getApplicationId()));
     }
 
-    public void closeApplication(Integer applicationId, Integer userAuthorId) throws EntityNotExists, PermissionsException, UserNotExistsException {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void closeApplication(Integer applicationId, Integer userAuthorId)
+            throws EntityNotExists, PermissionsException, UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
 
-        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
-        if(userApplication.getStageId().getStageName().equals("Closed")) {
+        UserApplication userApplication = userApplicationRepository.findByApplicationId(applicationId)
+                .orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        if (userApplication.getStageId().getStageName().equals("Closed")) {
             throw new PermissionsException();
         }
 
@@ -181,4 +171,18 @@ public class ApplicationService {
 
     }
 
+    private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
+            throws PermissionsException {
+
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+            if (user.getUserId() != userAuthor.getUserId() || slaId != null) {
+                throw new PermissionsException();
+            }
+        }
+        if (!RoleType.isAdmin(userAuthor)) {
+            if (helpdeskId != null || groupId != null) {
+                throw new PermissionsException();
+            }
+        }
+    }
 }

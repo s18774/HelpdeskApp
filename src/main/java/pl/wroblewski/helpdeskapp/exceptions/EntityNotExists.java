@@ -1,7 +1,6 @@
 package pl.wroblewski.helpdeskapp.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 
 import java.lang.reflect.Type;
 

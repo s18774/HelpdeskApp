@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface SLARepository extends CrudRepository<SLA, Integer> {
     List<SLA> findAll();
-    List<SLA> findAllBySlaLevelOrderBySlaIdDesc(Short slaLevel);
-    List<SLA> findAllBySlaLevelGreaterThan(Short slaLevel);
 }

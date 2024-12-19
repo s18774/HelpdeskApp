@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 public class GroupUpdateDto {
     private Integer groupId;
-
     private String groupName;
-
     private Byte isGroupActive;
 }

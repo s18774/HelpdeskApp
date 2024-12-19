@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity(name = "UserApplication")
 @Getter
@@ -41,7 +40,7 @@ public class UserApplication {
     @Column(name = "opening_date")
     private LocalDate openingDate;
 
-    @Column(name = "closing_date", nullable = true)//może być puste
+    @Column(name = "closing_date", nullable = true)
     private LocalDate closingDate;
 
     @ManyToOne

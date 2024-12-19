@@ -1,8 +1,6 @@
 package pl.wroblewski.helpdeskapp.dto.user;
 
 import lombok.*;
-import pl.wroblewski.helpdeskapp.models.Department;
-import pl.wroblewski.helpdeskapp.models.User;
 
 @NoArgsConstructor
 @Getter

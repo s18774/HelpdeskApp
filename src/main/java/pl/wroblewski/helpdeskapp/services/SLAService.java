@@ -13,6 +13,6 @@ public class SLAService {
     private final SLARepository slaRepository;
 
     public List<SLA> getAllSLA() {
-        return (List<SLA>) slaRepository.findAll();
+        return slaRepository.findAll();
     }
 }

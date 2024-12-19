@@ -48,6 +48,6 @@ public class Device {
     private String macAddress;
 
     @OneToMany
-    @JoinColumn(name="device_id")
+    @JoinColumn(name = "device_id")
     private Set<UserDevice> userDevices;
 }

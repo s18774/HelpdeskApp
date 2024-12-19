@@ -1,6 +1,5 @@
 package pl.wroblewski.helpdeskapp.dto.group;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,8 +9,6 @@ import lombok.Setter;
 @Setter
 public class GroupDto {
     private Integer groupId;
-
     private String groupName;
-
     private Byte isGroupActive;
 }

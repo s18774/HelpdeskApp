@@ -13,9 +13,9 @@ import java.io.Serializable;
 @Setter
 @Builder
 public class UserDeviceId implements Serializable {
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Integer userId;
 
-    @Column(name="device_id")
+    @Column(name = "device_id")
     private Integer deviceId;
 }

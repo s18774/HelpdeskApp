@@ -13,9 +13,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Getter
 public class UserApplicationId implements Serializable {
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Integer userId;
 
-    @Column(name="application_id")
+    @Column(name = "application_id")
     private Integer applicationId;
 }

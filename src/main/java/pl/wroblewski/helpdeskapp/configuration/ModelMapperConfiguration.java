@@ -114,12 +114,6 @@ public class ModelMapperConfiguration {
                     mapper.map(d -> d.getDeviceType().getTypeDescription(), DeviceDto::setDeviceTypeName);
                     mapper.map(d -> d.getDeviceType().getDeviceTypeId(), DeviceDto::setDeviceTypeId);
                     mapper.map(Device::getSerialNumber, DeviceDto::setSerialNumber);
-//                    mapper.map(d -> {
-//                        if(d.getUserDevices() == null) {
-//                            return null;
-//                        }
-//                        return d.getUserDevices().stream().map(u -> u.getId().getUserId()).findFirst().orElse(null);
-//                        }, DeviceDto::setUserId);
                 });
     }
 }

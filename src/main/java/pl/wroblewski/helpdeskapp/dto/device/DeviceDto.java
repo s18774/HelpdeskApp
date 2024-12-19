@@ -1,10 +1,11 @@
 package pl.wroblewski.helpdeskapp.dto.device;
 
-import jakarta.persistence.Column;
 import lombok.*;
+import org.modelmapper.ModelMapper;
+import pl.wroblewski.helpdeskapp.models.Device;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -25,4 +26,27 @@ public class DeviceDto {
     private Byte isGuarantee;
     private String ipAddress;
     private String macAddress;
+
+    public static List<DeviceDto> toDto(List<Device> devices, ModelMapper modelMapper) {
+        var devicesDto = devices
+                .stream()
+                .map(d -> modelMapper.map(d, DeviceDto.class))
+                .toList();
+
+        for (var dto : devicesDto) {
+            var dev = devices.stream()
+                    .filter(x -> x.getSerialNumber().equals(dto.getSerialNumber()) && x.getUserDevices() != null)
+                    .findFirst();
+            if (dev.isPresent()) {
+                var userDevices = dev.get().getUserDevices();
+                if (userDevices != null && !userDevices.isEmpty()) {
+                    var user = userDevices.stream().findAny().get().getUser();
+                    dto.setFullName(user.getFullName());
+                    dto.setUserId(user.getUserId());
+                }
+            }
+        }
+
+        return devicesDto;
+    }
 }

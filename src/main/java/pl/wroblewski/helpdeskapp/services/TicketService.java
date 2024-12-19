@@ -45,7 +45,7 @@ public class TicketService {
         if(RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return (List<UserTicket>) userTicketRepository.findByTicketIdAndUserIdAndSlaIdAndStageId(ticketId, userId, slaId, stageId);
+        return userTicketRepository.findByTicketIdAndUserIdAndSlaIdAndStageId(ticketId, userId, slaId, stageId);
     }
 
     @Transactional

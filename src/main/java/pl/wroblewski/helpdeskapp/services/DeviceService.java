@@ -1,8 +1,9 @@
 package pl.wroblewski.helpdeskapp.services;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.wroblewski.helpdeskapp.exceptions.DeviceAlreadyAttachedException;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
@@ -13,7 +14,6 @@ import pl.wroblewski.helpdeskapp.repositories.DeviceTypeRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserDeviceRepository;
 import pl.wroblewski.helpdeskapp.repositories.UserRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,36 +21,38 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DeviceService {
-    //to do list
-    //pobieranie do listy wszystkich istniejących urządzeń
-    //pobieranie listy urządzeń dla konkretnego użytkownika
-    //pobieranie urządzenia po konkretnym parametrze(nr. seryjny/inwentarzowy, na gwarancji/po gwarancji)
     private final DeviceRepository deviceRepository;
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final UserDeviceRepository userDeviceRepository;
     private final LogsService logsService;
 
-    public List<Device> getAllDevices(Integer deviceTypeId, String brand, String model, String serialNumber, Integer userId, Integer userAuthorId) throws UserNotExistsException {
+    public List<Device> getAllDevices(Integer deviceTypeId, String brand, String model, String serialNumber,
+                                      Integer userId, Integer userAuthorId)
+            throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        if(RoleType.isUser(userAuthor)) {
+        if (RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return (List<Device>) deviceRepository.findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(deviceTypeId, brand, model, serialNumber, userId);
+        return deviceRepository.findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(deviceTypeId,
+                brand, model, serialNumber, userId);
     }
 
     public List<DeviceType> getAllTypes() {
         return (List<DeviceType>) deviceTypeRepository.findAll();
     }
 
-    public Device createDevice(Integer deviceTypeId, String brand, String model, String serialNumber, String inventoryNumber, Boolean isGuarantee, String macAddress,  Integer userAuthorId)
+    @Transactional
+    public Device createDevice(Integer deviceTypeId, String brand, String model, String serialNumber,
+                               String inventoryNumber, Boolean isGuarantee, String macAddress, Integer userAuthorId)
             throws UserNotExistsException, PermissionsException, EntityNotExists {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        if(!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
 
-        DeviceType deviceType = deviceTypeRepository.findById(deviceTypeId).orElseThrow(() -> new EntityNotExists(DeviceType.class));
+        DeviceType deviceType = deviceTypeRepository.findById(deviceTypeId)
+                .orElseThrow(() -> new EntityNotExists(DeviceType.class));
 
         Device device = deviceRepository.save(Device.builder()
                 .deviceType(deviceType)
@@ -59,7 +61,7 @@ public class DeviceService {
                 .model(model)
                 .macAddress(macAddress)
                 .dateOfPurchase(LocalDateTime.now())
-                .isGuarantee((byte)(isGuarantee != null && isGuarantee ? 1 : 0))
+                .isGuarantee((byte) (isGuarantee != null && isGuarantee ? 1 : 0))
                 .inventoryNumber(inventoryNumber)
                 .build());
 
@@ -72,17 +74,18 @@ public class DeviceService {
         return device;
     }
 
-    public Device getDevice(Integer deviceId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    public Device getDevice(Integer deviceId, Integer userAuthorId)
+            throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
-        if(!RoleType.isHelpdesk(userAuthor) && !RoleType.isAdmin(userAuthor)
+        if (!RoleType.isHelpdesk(userAuthor) && !RoleType.isAdmin(userAuthor)
                 && !userHasDevice(userAuthor, device)) {
             throw new PermissionsException();
         }
         return device;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void updateDevice(Integer deviceId, Integer userId, String inventoryNumber, Byte isGuarantee, String ipAddress, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
@@ -91,7 +94,7 @@ public class DeviceService {
             throw new PermissionsException();
         }
 
-        if(userId != null) {
+        if (userId != null) {
             User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
 
             Optional<UserDevice> userDevice = userDeviceRepository.findByDevice(device);
@@ -120,13 +123,20 @@ public class DeviceService {
                 device.getSerialNumber()));
     }
 
-    public List<Device> getAllNotAttachedDevices() {
+    public List<Device> getAllNotAttachedDevices(Integer userAuthorId)
+            throws UserNotExistsException, PermissionsException {
+        User user = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
+        if (!RoleType.isAdmin(user)) {
+            throw new PermissionsException();
+        }
         return deviceRepository.getAllNotAttached();
     }
 
-    public void attachDevice(Integer userId, Integer deviceId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException, DeviceAlreadyAttachedException {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void attachDevice(Integer userId, Integer deviceId, Integer userAuthorId)
+            throws UserNotExistsException, EntityNotExists, PermissionsException, DeviceAlreadyAttachedException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        if(!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
 
@@ -134,7 +144,7 @@ public class DeviceService {
         Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new EntityNotExists(Device.class));
 
         Optional<UserDevice> userDevice = userDeviceRepository.findByDevice(device);
-        if(userDevice.isPresent()) {
+        if (userDevice.isPresent()) {
             throw new DeviceAlreadyAttachedException();
         }
         UserDevice newUserDevice = UserDevice.builder()

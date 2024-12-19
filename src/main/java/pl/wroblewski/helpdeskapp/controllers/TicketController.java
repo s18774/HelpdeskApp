@@ -32,9 +32,13 @@ public class TicketController extends BaseController {
     private final ModelMapper modelMapper;
 
 
-
     @GetMapping
-    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId, @PathParam("userId") Integer userId, @PathParam("slaId") Integer slaId, @PathParam("stageId") Integer stageId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId,
+                                                      @PathParam("userId") Integer userId,
+                                                      @PathParam("slaId") Integer slaId,
+                                                      @PathParam("stageId") Integer stageId,
+                                                      @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         return ResponseEntity.ok(ticketService
@@ -45,14 +49,18 @@ public class TicketController extends BaseController {
     }
 
     @GetMapping("{ticketId}")
-    public ResponseEntity<TicketDto> getTicket(@PathVariable Integer ticketId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<TicketDto> getTicket(@PathVariable Integer ticketId,
+                                               @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         UserTicket ticket = ticketService.getTicket(ticketId, author.getUserId());
         return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createTicket(@RequestBody TicketCreateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> createTicket(@RequestBody TicketCreateDto ticket,
+                                                     @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         ticketService.addTicket(ticket.getSlaId(), ticket.getDepartmentId(), ticket.getFloor(),
@@ -66,25 +74,30 @@ public class TicketController extends BaseController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updateTicket(@RequestBody TicketUpdateDto ticket, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> updateTicket(@RequestBody TicketUpdateDto ticket,
+                                                     @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        ticketService.updateTicket(ticket.getTicketId(), ticket.getSlaId(), ticket.getStageId(), ticket.getTitle(), ticket.getDescription(), ticket.getHelpdeskId(), author.getUserId());
+        ticketService.updateTicket(ticket.getTicketId(), ticket.getSlaId(), ticket.getStageId(),
+                ticket.getTitle(), ticket.getDescription(), ticket.getHelpdeskId(), author.getUserId());
 
-        return new ResponseEntity<>(BaseResponse.builder()
+        return ResponseEntity.ok(BaseResponse.builder()
                 .success(true)
                 .message("Ticket updated!")
-                .build(), HttpStatus.OK);
+                .build());
     }
 
     @PostMapping("{ticketId}/close")
-    public ResponseEntity<BaseResponse> closeTicket(@PathVariable Integer ticketId, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> closeTicket(@PathVariable Integer ticketId,
+                                                    @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         ticketService.closeTicket(ticketId, author.getUserId());
-        return new ResponseEntity<>(BaseResponse.builder()
+        return ResponseEntity.ok(BaseResponse.builder()
                 .success(true)
                 .message("Ticket updated!")
-                .build(), HttpStatus.OK);
+                .build());
     }
 }

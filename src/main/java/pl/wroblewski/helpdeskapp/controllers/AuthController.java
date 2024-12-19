@@ -16,7 +16,8 @@ public class AuthController extends BaseController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
-    public AuthController(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager, UserService userService) {
+    public AuthController(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager,
+                          UserService userService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
@@ -24,7 +25,8 @@ public class AuthController extends BaseController {
 
     @PostMapping
     public ResponseEntity<?> auth(@RequestBody UserCredentials userCredentials) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userCredentials.getUsername(), userCredentials.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userCredentials.getUsername(),
+                userCredentials.getPassword()));
         return ResponseEntity.ok(jwtTokenUtil.createToken(userService.getUser(userCredentials.getUsername())));
     }
 }

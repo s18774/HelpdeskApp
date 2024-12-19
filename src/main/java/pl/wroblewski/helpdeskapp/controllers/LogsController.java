@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.wroblewski.helpdeskapp.dto.ExperienceLevelDto;
 import pl.wroblewski.helpdeskapp.dto.LogsDto;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -29,7 +28,8 @@ public class LogsController extends BaseController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<LogsDto>> getAllLogs(@AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException {
+    public ResponseEntity<List<LogsDto>> getAllLogs(@AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
         var logs = logsService.getAllLogs(author.getUserId())
                 .stream()

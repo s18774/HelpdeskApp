@@ -3,7 +3,6 @@ package pl.wroblewski.helpdeskapp.repositories;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import pl.wroblewski.helpdeskapp.models.Device;
 import pl.wroblewski.helpdeskapp.models.Group;
 import pl.wroblewski.helpdeskapp.models.Role;
 import pl.wroblewski.helpdeskapp.models.User;
@@ -13,11 +12,7 @@ import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findByUsername(String username);
-    //wyszukiwanie po imieniu
-    //wyszukiwanie po nazwisku
 
-    //edycja danych (administrator/lider)
-    //tworzenie/usuwanie konta użytkownika(admin/lider)
     List<User> findAllByRole(Role role);
 
     @Query("Select u FROM _user u LEFT JOIN _Group g ON u.group.groupId=g.groupId " +
@@ -39,6 +34,8 @@ public interface UserRepository extends CrudRepository<User, Integer> {
                                                               @Param("positionName") String positionName);
 
     List<User> findAllByGroup(Group group);
+
     Optional<User> findByUserIdAndGroup(Integer userId, Group group);
+
     boolean existsByUsername(String username);
 }

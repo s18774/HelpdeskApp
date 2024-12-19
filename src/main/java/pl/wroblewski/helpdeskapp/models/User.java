@@ -12,8 +12,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class User {
-    //nie zrobiłem tego supervisora bo troche idk jak to zaimplementować
-    //generalnie user może być również przełożonym
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")

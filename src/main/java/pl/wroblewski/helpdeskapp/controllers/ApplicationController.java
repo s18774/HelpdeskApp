@@ -8,18 +8,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import pl.wroblewski.helpdeskapp.dto.*;
+import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.application.ApplicationCreateDto;
 import pl.wroblewski.helpdeskapp.dto.application.ApplicationDto;
 import pl.wroblewski.helpdeskapp.dto.application.ApplicationUpdateDto;
-import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
-import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.models.UserApplication;
-import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.services.ApplicationService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
@@ -43,10 +40,10 @@ public class ApplicationController extends BaseController {
             throws UserNotExistsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        var x = applicationService
+        var allApplications = applicationService
                 .getAllApplications(applicationId, userId, slaId, stageId, author.getUserId());
 
-        return ResponseEntity.ok(applicationService //FIXME nie dziala bo sa nulle w bazie na grupach itp, do naprawy
+        return ResponseEntity.ok(applicationService
                 .getAllApplications(applicationId, userId, slaId, stageId, author.getUserId())
                 .stream()
                 .map(t -> modelMapper.map(t, ApplicationDto.class))
@@ -54,14 +51,18 @@ public class ApplicationController extends BaseController {
     }
 
     @GetMapping("{applicationId}")
-    public ResponseEntity<ApplicationDto> getTickets(@PathVariable Integer applicationId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<ApplicationDto> getTickets(@PathVariable Integer applicationId,
+                                                     @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         UserApplication ticket = applicationService.getApplication(applicationId, author.getUserId());
         return ResponseEntity.ok(modelMapper.map(ticket, ApplicationDto.class));
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createApplication(@RequestBody ApplicationCreateDto applicationDto, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> createApplication(@RequestBody ApplicationCreateDto applicationDto,
+                                                          @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         applicationService.addApplication(applicationDto.getSlaId(), applicationDto.getTitle(),
@@ -75,10 +76,14 @@ public class ApplicationController extends BaseController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updateApplication(@RequestBody ApplicationUpdateDto application, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> updateApplication(@RequestBody ApplicationUpdateDto application,
+                                                          @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        applicationService.updateApplication(application.getApplicationId(), application.getSlaId(), application.getStageId(), application.getSubject(), application.getDescription(), application.getGroupId(), application.getHelpdeskId(), author.getUserId());
+        applicationService.updateApplication(application.getApplicationId(), application.getSlaId(),
+                application.getStageId(), application.getSubject(), application.getDescription(),
+                application.getGroupId(), application.getHelpdeskId(), author.getUserId());
 
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)
@@ -87,7 +92,9 @@ public class ApplicationController extends BaseController {
     }
 
     @PostMapping("{applicationId}/close")
-    public ResponseEntity<BaseResponse> closeApplication(@PathVariable Integer applicationId, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> closeApplication(@PathVariable Integer applicationId,
+                                                         @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         applicationService.closeApplication(applicationId, author.getUserId());

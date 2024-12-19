@@ -11,16 +11,12 @@ import pl.wroblewski.helpdeskapp.dto.BaseResponse;
 import pl.wroblewski.helpdeskapp.dto.group.GroupCreateDto;
 import pl.wroblewski.helpdeskapp.dto.group.GroupDto;
 import pl.wroblewski.helpdeskapp.dto.group.GroupUpdateDto;
-import pl.wroblewski.helpdeskapp.dto.ticket.TicketDto;
-import pl.wroblewski.helpdeskapp.dto.ticket.TicketUpdateDto;
 import pl.wroblewski.helpdeskapp.dto.user.UserDetailsDto;
-import pl.wroblewski.helpdeskapp.dto.user.UserDto;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.Group;
 import pl.wroblewski.helpdeskapp.models.User;
-import pl.wroblewski.helpdeskapp.models.UserTicket;
 import pl.wroblewski.helpdeskapp.services.GroupService;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
@@ -44,22 +40,26 @@ public class GroupController extends BaseController {
 
     @PostMapping
     public ResponseEntity<GroupDto> createGroup(@RequestBody GroupCreateDto groupCreateDto,
-                                                  @AuthenticationPrincipal UserDetails userDetails)
-            throws EntityNotExists, UserNotExistsException, PermissionsException {
+                                                @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
         var newGroup = groupService.createGroup(groupCreateDto.getGroupName(), author.getUserId());
-        return ResponseEntity.ok(modelMapper.map(newGroup, GroupDto.class));
+        return new ResponseEntity<>(modelMapper.map(newGroup, GroupDto.class), HttpStatus.CREATED);
     }
 
     @GetMapping("{groupId}")
-    public ResponseEntity<GroupDto> getGroup(@PathVariable Integer groupId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<GroupDto> getGroup(@PathVariable Integer groupId,
+                                             @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         Group group = groupService.getGroup(groupId, author.getUserId());
         return ResponseEntity.ok(modelMapper.map(group, GroupDto.class));
     }
 
     @GetMapping("{groupId}/users")
-    public ResponseEntity<List<UserDetailsDto>> getGroupUsers(@PathVariable Integer groupId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<List<UserDetailsDto>> getGroupUsers(@PathVariable Integer groupId,
+                                                              @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         List<User> users = groupService.getGroupUsers(groupId, author.getUserId());
         return ResponseEntity.ok(users
@@ -69,7 +69,9 @@ public class GroupController extends BaseController {
     }
 
     @PostMapping("{groupId}/users/{userId}")
-    public ResponseEntity<BaseResponse> getGroupUsers(@PathVariable Integer groupId, @PathVariable Integer userId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<BaseResponse> addUserToGroup(@PathVariable Integer groupId, @PathVariable Integer userId,
+                                                       @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         groupService.addUser(groupId, userId, author.getUserId());
         return ResponseEntity.ok(BaseResponse.builder()
@@ -79,7 +81,9 @@ public class GroupController extends BaseController {
     }
 
     @DeleteMapping("{groupId}/users/{userId}")
-    public ResponseEntity<BaseResponse> removeUser(@PathVariable Integer groupId, @PathVariable Integer userId, @AuthenticationPrincipal UserDetails userDetails) throws UserNotExistsException, PermissionsException, EntityNotExists {
+    public ResponseEntity<BaseResponse> removeUserFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId,
+                                                            @AuthenticationPrincipal UserDetails userDetails)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
         groupService.removeUser(groupId, userId, author.getUserId());
         return ResponseEntity.ok(BaseResponse.builder()
@@ -89,7 +93,9 @@ public class GroupController extends BaseController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updateGroup(@RequestBody GroupUpdateDto group, @AuthenticationPrincipal UserDetails userDetails) throws EntityNotExists, UserNotExistsException, PermissionsException {
+    public ResponseEntity<BaseResponse> updateGroup(@RequestBody GroupUpdateDto group,
+                                                    @AuthenticationPrincipal UserDetails userDetails)
+            throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
 
         groupService.updateGroup(group.getGroupId(), group.getGroupName(), group.getIsGroupActive(), author.getUserId());

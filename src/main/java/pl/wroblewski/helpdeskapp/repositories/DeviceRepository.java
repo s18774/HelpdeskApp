@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import pl.wroblewski.helpdeskapp.models.Device;
-import pl.wroblewski.helpdeskapp.models.UserDevice;
 
 import java.util.List;
 
@@ -16,14 +15,14 @@ public interface DeviceRepository extends CrudRepository<Device, Integer> {
             "AND (:model IS NULL OR d.model LIKE %:model%) " +
             "AND (:serialNumber IS NULL OR d.model LIKE %:serialNumber%) " +
             "AND (:userId IS NULL OR ud.id.userId = :userId) ")
-    public List<Device> findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(@Param("deviceTypeId") Integer deviceTypeId,
-                                                                                       @Param("brand") String brand,
-                                                                                       @Param("model") String model,
-                                                                                       @Param("serialNumber") String serialNumber,
-                                                                                       @Param("userId") Integer userId);
+    List<Device> findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(@Param("deviceTypeId") Integer deviceTypeId,
+                                                                            @Param("brand") String brand,
+                                                                            @Param("model") String model,
+                                                                            @Param("serialNumber") String serialNumber,
+                                                                            @Param("userId") Integer userId);
 
     @Query("SELECT d from Device d " +
             "LEFT JOIN UserDevice ud ON d.deviceId =ud.id.deviceId " +
             "WHERE ud.user IS NULL")
-    public List<Device> getAllNotAttached();
+    List<Device> getAllNotAttached();
 }
