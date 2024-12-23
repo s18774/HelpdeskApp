@@ -28,7 +28,7 @@ public class LogsService {
 
     public List<Logs> getAllLogs(Integer userAuthorId) throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        if(!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
         return (List<Logs>) logsRepository.findAll();

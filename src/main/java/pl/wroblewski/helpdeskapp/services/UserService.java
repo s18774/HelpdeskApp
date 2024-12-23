@@ -1,20 +1,21 @@
 package pl.wroblewski.helpdeskapp.services;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.wroblewski.helpdeskapp.exceptions.*;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
+import pl.wroblewski.helpdeskapp.exceptions.InvalidRoleException;
+import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
+import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = getUser(username);
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),
+                user.getPassword(), new ArrayList<>());
     }
 
     public User getUser(String username) {
@@ -49,29 +51,36 @@ public class UserService implements UserDetailsService {
         return (List<User>) userRepository.findAll();
     }
 
-    public List<User> getAllUsersDetails(String firstName, String secondName, String positionName, String groupName, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+    public List<User> getAllUsersDetails(String firstName, String secondName, String positionName,
+                                         String groupName, Integer userAuthorId)
+            throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
         if (groupName != null && !groupName.isEmpty()) {
-            return userRepository.findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(firstName, secondName, positionName, groupName);
+            return userRepository.findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(firstName, secondName,
+                    positionName, groupName);
         } else {
             return userRepository.findAllByFirstnameAndSecondNameAndPositionName(firstName, secondName, positionName);
         }
     }
 
     public List<User> getAllHelpdesk() throws EntityNotExists {
-        Role helpdeskRole = roleRepository.findById(RoleType.HELP_DESK.ordinal()).orElseThrow(() -> new EntityNotExists(Role.class));
-        Role adminRole = roleRepository.findById(RoleType.ADMIN.ordinal()).orElseThrow(() -> new EntityNotExists(Role.class));
+        Role helpdeskRole = roleRepository.findById(RoleType.HELP_DESK.ordinal())
+                .orElseThrow(() -> new EntityNotExists(Role.class));
+        Role adminRole = roleRepository.findById(RoleType.ADMIN.ordinal())
+                .orElseThrow(() -> new EntityNotExists(Role.class));
 
         ArrayList<User> users = new ArrayList<>(userRepository.findAllByRole(helpdeskRole));
         users.addAll(userRepository.findAllByRole(adminRole));
         return users;
     }
 
-    public User createUser(User newUser, Integer groupId, Integer departmentId, Integer supervisorId, Integer roleId, Integer experienceLevelId, Integer userAuthorId)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public User createUser(User newUser, Integer groupId, Integer departmentId, Integer supervisorId,
+                           Integer roleId, Integer experienceLevelId, Integer userAuthorId)
             throws UserNotExistsException, PermissionsException, EntityNotExists, InvalidRoleException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if (!RoleType.isAdmin(userAuthor)) {
@@ -84,16 +93,18 @@ public class UserService implements UserDetailsService {
         }
 
         User supervisor = null;
-        if(supervisorId != null) {
+        if (supervisorId != null) {
             supervisor = userRepository.findById(supervisorId).orElseThrow(() -> new EntityNotExists(User.class));
         }
 
-        ExperienceLevel experienceLevel = experienceLevelRepository.findById(experienceLevelId).orElseThrow(() -> new EntityNotExists(ExperienceLevel.class));
+        ExperienceLevel experienceLevel = experienceLevelRepository.findById(experienceLevelId)
+                .orElseThrow(() -> new EntityNotExists(ExperienceLevel.class));
 
-        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new EntityNotExists(Department.class));
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
 
-        if((role.getRoleName().equals("Admin") || role.getRoleName().equals("HelpDesk"))
+        if ((role.getRoleName().equals("Admin") || role.getRoleName().equals("HelpDesk"))
                 && !department.getDepartmentName().equals("IT")) {
             throw new InvalidRoleException("Admin/HelpDesk have to connect with IT Department");
         }
@@ -117,24 +128,24 @@ public class UserService implements UserDetailsService {
     }
 
     public List<Role> getAllRoles() {
-        return (List<Role>)roleRepository.findAll();
+        return (List<Role>) roleRepository.findAll();
     }
 
     public List<ExperienceLevel> getAllExperienceLevels() {
-        return (List<ExperienceLevel>)experienceLevelRepository.findAll();
+        return (List<ExperienceLevel>) experienceLevelRepository.findAll();
     }
 
     public User getUser(Integer userId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if(!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor) && !userAuthorId.equals(userId)) {
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor) && !userAuthorId.equals(userId)) {
             throw new PermissionsException();
         }
 
         return userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateUser(Integer userId, String username, String firstName, String secondName,
                            String positionName, Integer groupId,
                            Integer supervisorId, Integer departmentId,
@@ -145,26 +156,27 @@ public class UserService implements UserDetailsService {
                            Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if(!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
 
         User supervisor = null;
-        if(supervisorId != null) {
+        if (supervisorId != null) {
             supervisor = userRepository.findById(supervisorId).orElseThrow(UserNotExistsException::new);
         }
 
         Department department = null;
-        if(departmentId != null) {
+        if (departmentId != null) {
             department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
         }
 
-        ExperienceLevel experienceLevel = experienceLevelRepository.findById(experienceLevelId).orElseThrow(() -> new EntityNotExists(ExperienceLevel.class));
+        ExperienceLevel experienceLevel = experienceLevelRepository.findById(experienceLevelId)
+                .orElseThrow(() -> new EntityNotExists(ExperienceLevel.class));
 
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new EntityNotExists(Role.class));
 
         Group group = null;
-        if(groupId != null) {
+        if (groupId != null) {
             group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
         }
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);

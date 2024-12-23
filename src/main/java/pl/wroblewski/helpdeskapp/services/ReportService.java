@@ -2,6 +2,7 @@ package pl.wroblewski.helpdeskapp.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.wroblewski.helpdeskapp.exceptions.PdfException;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.RoleType;
@@ -26,7 +27,7 @@ public class ReportService {
     private final LogsService logsService;
 
     public byte[] getHelpdeskReport(LocalDate dateFrom, LocalDate dateTo, Integer helpdeskId, String jobType,
-                                    Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+                                    Integer userAuthorId) throws UserNotExistsException, PermissionsException, PdfException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();

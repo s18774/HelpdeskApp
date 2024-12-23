@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationService {
+public class ApplicationService extends BasePermissionService {
     private final UserApplicationRepository userApplicationRepository;
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
@@ -169,20 +169,5 @@ public class ApplicationService {
 
         logsService.log(String.format("%s (%d) closed application (%d)", userAuthor.getFullName(), userAuthor.getUserId(), userApplication.getId().getApplicationId()));
 
-    }
-
-    private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
-            throws PermissionsException {
-
-        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
-            if (user.getUserId() != userAuthor.getUserId() || slaId != null) {
-                throw new PermissionsException();
-            }
-        }
-        if (!RoleType.isAdmin(userAuthor)) {
-            if (helpdeskId != null || groupId != null) {
-                throw new PermissionsException();
-            }
-        }
     }
 }

@@ -1,8 +1,9 @@
 package pl.wroblewski.helpdeskapp.services;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.wroblewski.helpdeskapp.exceptions.EntityNotExists;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
@@ -12,23 +13,10 @@ import pl.wroblewski.helpdeskapp.repositories.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class TicketService {
-    //to do list
-
-    //pobieranie listy zgłoszeń
-    //pobieranie zgłoszeń o konkretnym statusie/otwarte zamknięte
-    //pobieranie zgłoszeń dla konkretnego użytkownika(użytkownik po zalogowaniu może zobaczyć listę swoich zgłoszeń otwartych/zamkniętych)
-    //pobieranie zgłoszeń z konkretnym sla(ważnością wykonania)
-    //pobieranie zgłoszeń z danego przedziału czasu od - do
-    //
-    //tworzenie zgłoszenia(zgłoszenie może stworzyć zalogowany użytkownik, helpdesk, admin)
-    //zamykanie zgłoszenia(helpdesk, admin)
-    //nadawanie sla do zgłoszenia(helpdesk, admin)
-    //przypisanie konkretnego pracownika do zgłoszenia(może to zrobić tylko admin)
+public class TicketService extends BasePermissionService {
     private final TicketRepository ticketRepository;
     private final UserTicketRepository userTicketRepository;
     private final UserRepository userRepository;
@@ -39,19 +27,22 @@ public class TicketService {
     private final LogsService logsService;
 
 
-    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId, Integer stageId, Integer userAuthorId) throws UserNotExistsException, PermissionsException {
+    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId,
+                                       Integer stageId, Integer userAuthorId)
+            throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if(RoleType.isUser(userAuthor)) {
+        if (RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
         return userTicketRepository.findByTicketIdAndUserIdAndSlaIdAndStageId(ticketId, userId, slaId, stageId);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void addTicket(Integer slaId, Integer departmentId, Integer floor, String title,
                           String description, Integer userId, Integer userAuthorId,
-                          Integer helpdeskId, Integer groupId) throws UserNotExistsException, PermissionsException, EntityNotExists {
+                          Integer helpdeskId, Integer groupId)
+            throws UserNotExistsException, PermissionsException, EntityNotExists {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
@@ -98,55 +89,46 @@ public class TicketService {
                 .build();
         userTicketRepository.save(userTicket);
 
-        logsService.log(String.format("%s (%d) created ticket (%d)", user.getFullName(), user.getUserId(), ticket.getTicketId()));
+        logsService.log(String.format("%s (%d) created ticket (%d)", user.getFullName(),
+                user.getUserId(), ticket.getTicketId()));
     }
 
-    public UserTicket getTicket(Integer ticketId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    public UserTicket getTicket(Integer ticketId, Integer userAuthorId)
+            throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId)
+                .orElseThrow(() -> new EntityNotExists(UserTicket.class));
 
-        if(RoleType.isUser(userAuthor) && !Objects.equals(userTicket.getId().getUserId(), userAuthorId)) {
+        if (RoleType.isUser(userAuthor) && !Objects.equals(userTicket.getId().getUserId(), userAuthorId)) {
             throw new PermissionsException();
         }
         return userTicket;
     }
 
-    private void userHasPermissions(User user, User userAuthor, Integer slaId, Integer helpdeskId, Integer groupId)
-            throws PermissionsException {
-
-        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
-            if (user.getUserId() != userAuthor.getUserId() || slaId != null) {
-                throw new PermissionsException();
-            }
-        }
-        if(!RoleType.isAdmin(userAuthor)) {
-            if(helpdeskId != null || groupId != null) {
-                throw new PermissionsException();
-            }
-        }
-    }
-
-    @Transactional
-    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description, Integer helpdeskId, Integer userAuthorId) throws UserNotExistsException, EntityNotExists, PermissionsException {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description,
+                             Integer helpdeskId, Integer userAuthorId)
+            throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId)
+                .orElseThrow(() -> new EntityNotExists(UserTicket.class));
 
         if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
         Stage stage = stageRepository.findById(stageId).orElseThrow(() -> new EntityNotExists(Stage.class));
-        if(stage.getStageName().equals("Closed")) {
+        if (stage.getStageName().equals("Closed")) {
             throw new PermissionsException();
         }
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
 
         User helpdesk = null;
-        if(helpdeskId != null) {
+        if (helpdeskId != null) {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
         }
 
-        if(!RoleType.isAdmin(userAuthor) && helpdesk != userTicket.getHelpDeskId()) {
+        if (!RoleType.isAdmin(userAuthor) && helpdesk != userTicket.getHelpDeskId()) {
             throw new PermissionsException();
         }
 
@@ -157,26 +139,29 @@ public class TicketService {
         ticketRepository.save(ticket);
 
         userTicket.setStageId(stage);
-        if(stage.getStageName().equals("Closed")) {
+        if (stage.getStageName().equals("Closed")) {
             userTicket.setClosingDate(LocalDate.now());
             userTicket.setResolverUser(userAuthor);
         }
         userTicket.setHelpDeskId(helpdesk);
         userTicketRepository.save(userTicket);
 
-        logsService.log(String.format("%s (%d) updated ticket (%d)", userAuthor.getFullName(), userAuthor.getUserId(), ticket.getTicketId()));
-
+        logsService.log(String.format("%s (%d) updated ticket (%d)", userAuthor.getFullName(),
+                userAuthor.getUserId(), ticket.getTicketId()));
     }
 
-    public void closeTicket(Integer ticketId, Integer userAuthorId) throws EntityNotExists, PermissionsException, UserNotExistsException {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void closeTicket(Integer ticketId, Integer userAuthorId)
+            throws EntityNotExists, PermissionsException, UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
         if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
 
-        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId).orElseThrow(() -> new EntityNotExists(UserTicket.class));
-        if(userTicket.getStageId().getStageName().equals("Closed")) {
+        UserTicket userTicket = userTicketRepository.findByTicketId(ticketId)
+                .orElseThrow(() -> new EntityNotExists(UserTicket.class));
+        if (userTicket.getStageId().getStageName().equals("Closed")) {
             throw new PermissionsException();
         }
 
@@ -186,7 +171,8 @@ public class TicketService {
         userTicket.setResolverUser(userAuthor);
         userTicketRepository.save(userTicket);
 
-        logsService.log(String.format("%s (%d) closed ticket (%d)", userAuthor.getFullName(), userAuthor.getUserId(), userTicket.getId().getTicketId()));
+        logsService.log(String.format("%s (%d) closed ticket (%d)", userAuthor.getFullName(),
+                userAuthor.getUserId(), userTicket.getId().getTicketId()));
 
     }
 }

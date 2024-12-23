@@ -9,7 +9,7 @@ import pl.wroblewski.helpdeskapp.exceptions.*;
 public class BaseController {
     @ExceptionHandler({EntityNotExists.class, UserNotExistsException.class,
             PermissionsException.class, InvalidRoleException.class,
-            DeviceAlreadyAttachedException.class})
+            DeviceAlreadyAttachedException.class, PdfException.class})
     public ResponseEntity<BaseResponse> handleException(Exception ex) {
         BaseResponse response = BaseResponse
                 .builder()

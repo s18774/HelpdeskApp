@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import pl.wroblewski.helpdeskapp.exceptions.PdfException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -17,7 +18,7 @@ import java.net.http.HttpResponse;
 
 @Component
 public class PdfUtil {
-    public byte[] toPdf(String html) {
+    public byte[] toPdf(String html) throws PdfException {
         Document document = Jsoup.parse(html, "UTF-8");
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
@@ -27,10 +28,8 @@ public class PdfUtil {
             builder.withW3cDocument(new W3CDom().fromJsoup(document), "/");
             builder.run();
             return os.toByteArray();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new PdfException(e.getMessage());
         }
     }
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.wroblewski.helpdeskapp.exceptions.PdfException;
 import pl.wroblewski.helpdeskapp.exceptions.PermissionsException;
 import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
@@ -34,7 +35,7 @@ public class ReportController extends BaseController {
                                                     @PathParam("helpdeskId") Integer helpdeskId,
                                                     @PathParam("jobType") String jobType,
                                                     @AuthenticationPrincipal UserDetails userDetails)
-            throws UserNotExistsException, PermissionsException {
+            throws UserNotExistsException, PermissionsException, PdfException {
         User author = userService.getUser(userDetails.getUsername());
 
         byte[] contents = reportService.getHelpdeskReport(dateFrom, dateTo, helpdeskId, jobType, author.getUserId());
