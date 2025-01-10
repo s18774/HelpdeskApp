@@ -23,6 +23,8 @@ public class DatabaseSeed {
     private final SLARepository slaRepository;
     private final StageRepository stageRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TicketRepository ticketRepository;
+    private final UserTicketRepository userTicketRepository;
 
     @Bean
     public void seedData() {
@@ -35,6 +37,8 @@ public class DatabaseSeed {
         seedDevices();
         seedSLA();
         seedStages();
+        seedTickets();
+        seedApplications();
     }
 
     private void seedRoles() {
@@ -76,6 +80,30 @@ public class DatabaseSeed {
                         .experienceLevel(experienceLevelRepository.findById(1).get())
                         .floor(1)
                         .role(roleRepository.findById(3).get())
+                        .employmentDate(LocalDate.now())
+                        .build(),
+                User.builder()
+                        .email("helpdesk@gmail.com")
+                        .positionName("IT")
+                        .password(passwordEncoder.encode("helpdesk"))
+                        .username("helpdesk")
+                        .firstName("Adam")
+                        .secondName("Nowak")
+                        .experienceLevel(experienceLevelRepository.findById(1).get())
+                        .floor(1)
+                        .role(roleRepository.findById(4).get())
+                        .employmentDate(LocalDate.now())
+                        .build(),
+                User.builder()
+                        .email("user@gmail.com")
+                        .positionName("IT")
+                        .password(passwordEncoder.encode("user"))
+                        .username("user")
+                        .firstName("Karol")
+                        .secondName("Kowalczyk")
+                        .experienceLevel(experienceLevelRepository.findById(1).get())
+                        .floor(1)
+                        .role(roleRepository.findById(2).get())
                         .employmentDate(LocalDate.now())
                         .build()
         };
@@ -181,5 +209,49 @@ public class DatabaseSeed {
                 stageRepository.save(stage);
             }
         }
+    }
+
+    private void seedTickets() {
+        Ticket[] tickets = {
+                Ticket.builder()
+                        .ticketId(1)
+                        .ticketNumber(12)
+                        .roomNumber(1)
+                        .floor(1)
+                        .description("This is test ticket")
+                        .department(departmentRepository.findById(1).get())
+                        .title("Ticker no. 1")
+                        .sla(slaRepository.findById(1).get())
+                        .build()
+        };
+
+
+        for (var ticket : tickets) {
+            if (!ticketRepository.existsById(ticket.getTicketId())) {
+                ticketRepository.save(ticket);
+            }
+        }
+
+        var user = userRepository.findById(1).get();
+
+        UserTicket[] userTickets = {
+                UserTicket.builder()
+                        .ticket(tickets[0])
+                        .user(user)
+                        .build()
+        };
+
+
+        for (var userTicket : userTickets) {
+            if(!userTicketRepository.existsById(new UserTicketId(userTicket.getUser().getUserId(), userTicket.getTicket().getTicketId()))) {
+                userTicketRepository.save(userTicket);
+            }
+        }
+    }
+
+    private void seedApplications() {
+        Application[] applications = {
+
+        };
     }
 }

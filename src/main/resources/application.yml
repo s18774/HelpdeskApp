@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://db;database=HelpDeskApp;verifyServerCertificate=false;useSSL=false;encrypt=false;
+    url: jdbc:sqlserver://db;database=master;verifyServerCertificate=false;useSSL=false;encrypt=false;
 #    url: jdbc:sqlserver://localhost;database=HelpDeskApp;verifyServerCertificate=false;useSSL=false;encrypt=false;port=1434;
     username: sa
     password: Admin1234
