@@ -25,6 +25,8 @@ public class DatabaseSeed {
     private final PasswordEncoder passwordEncoder;
     private final TicketRepository ticketRepository;
     private final UserTicketRepository userTicketRepository;
+    private final ApplicationRepository applicationRepository;
+    private final UserApplicationRepository userApplicationRepository;
 
     @Bean
     public void seedData() {
@@ -222,6 +224,16 @@ public class DatabaseSeed {
                         .department(departmentRepository.findById(1).get())
                         .title("Ticker no. 1")
                         .sla(slaRepository.findById(1).get())
+                        .build(),
+                Ticket.builder()
+                        .ticketId(2)
+                        .ticketNumber(15)
+                        .roomNumber(2)
+                        .floor(2)
+                        .description("This is test ticket no 2")
+                        .department(departmentRepository.findById(2).get())
+                        .title("Ticker no. 2")
+                        .sla(slaRepository.findById(2).get())
                         .build()
         };
 
@@ -236,8 +248,18 @@ public class DatabaseSeed {
 
         UserTicket[] userTickets = {
                 UserTicket.builder()
+                        .id(new UserTicketId(user.getUserId(), tickets[0].getTicketId()))
                         .ticket(tickets[0])
                         .user(user)
+                        .stageId(stageRepository.findById(1).get())
+                        .openingDate(LocalDate.now())
+                        .build(),
+                UserTicket.builder()
+                        .id(new UserTicketId(user.getUserId(), tickets[1].getTicketId()))
+                        .ticket(tickets[1])
+                        .user(user)
+                        .stageId(stageRepository.findById(1).get())
+                        .openingDate(LocalDate.now())
                         .build()
         };
 
@@ -251,7 +273,53 @@ public class DatabaseSeed {
 
     private void seedApplications() {
         Application[] applications = {
-
+            Application.builder()
+                    .applicationId(1)
+                    .sla(slaRepository.findById(1).get())
+                    .typeOfApplication("test")
+                    .applicationNumber(20L)
+                    .description("This is test application description")
+                    .subject("Test application")
+                    .build(),
+                Application.builder()
+                        .applicationId(2)
+                        .sla(slaRepository.findById(2).get())
+                        .typeOfApplication("test 2")
+                        .applicationNumber(21L)
+                        .description("This is test application description no 2")
+                        .subject("Test application 2")
+                        .build()
         };
+        for(var application : applications) {
+            if (!applicationRepository.existsById(application.getApplicationId())) {
+                applicationRepository.save(application);
+            }
+        }
+
+        var user = userRepository.findById(1).get();
+
+        UserApplication[] userApplications = {
+                UserApplication.builder()
+                        .id(new UserApplicationId(user.getUserId(), applications[0].getApplicationId()))
+                        .application(applications[0])
+                        .user(user)
+                        .stageId(stageRepository.findById(1).get())
+                        .openingDate(LocalDate.now())
+                        .build(),
+                UserApplication.builder()
+                        .id(new UserApplicationId(user.getUserId(), applications[1].getApplicationId()))
+                        .application(applications[1])
+                        .user(user)
+                        .stageId(stageRepository.findById(1).get())
+                        .openingDate(LocalDate.now())
+                        .build(),
+        };
+
+        for(var userApplication : userApplications) {
+            if(!userApplicationRepository.existsById(new UserApplicationId(userApplication.getUser().getUserId(), userApplication.getApplication().getApplicationId()))) {
+                userApplicationRepository.save(userApplication);
+            }
+        }
+
     }
 }
