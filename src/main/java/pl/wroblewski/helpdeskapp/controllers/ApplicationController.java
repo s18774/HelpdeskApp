@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -60,7 +61,7 @@ public class ApplicationController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createApplication(@RequestBody ApplicationCreateDto applicationDto,
+    public ResponseEntity<BaseResponse> createApplication(@RequestBody @Valid ApplicationCreateDto applicationDto,
                                                           @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());

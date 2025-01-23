@@ -56,7 +56,7 @@ public class UserService implements UserDetailsService {
             throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if (!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
             throw new PermissionsException();
         }
         if (groupName != null && !groupName.isEmpty()) {
@@ -156,7 +156,7 @@ public class UserService implements UserDetailsService {
                            Integer userAuthorId) throws PermissionsException, UserNotExistsException, EntityNotExists {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
 
-        if (!RoleType.isAdmin(userAuthor) && !RoleType.isHelpdesk(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor)) {
             throw new PermissionsException();
         }
 

@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -58,7 +59,7 @@ public class TicketController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createTicket(@RequestBody TicketCreateDto ticket,
+    public ResponseEntity<BaseResponse> createTicket(@RequestBody @Valid TicketCreateDto ticket,
                                                      @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
