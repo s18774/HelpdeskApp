@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class JobDto {
+    private String title;
     private String jobType;
     private Integer jobId;
     private String fullName;

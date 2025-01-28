@@ -68,9 +68,9 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> getAllHelpdesk() throws EntityNotExists {
-        Role helpdeskRole = roleRepository.findById(RoleType.HELP_DESK.ordinal())
+        Role helpdeskRole = roleRepository.findByRoleName(RoleType.HELP_DESK.getName())
                 .orElseThrow(() -> new EntityNotExists(Role.class));
-        Role adminRole = roleRepository.findById(RoleType.ADMIN.ordinal())
+        Role adminRole = roleRepository.findByRoleName(RoleType.ADMIN.getName())
                 .orElseThrow(() -> new EntityNotExists(Role.class));
 
         ArrayList<User> users = new ArrayList<>(userRepository.findAllByRole(helpdeskRole));

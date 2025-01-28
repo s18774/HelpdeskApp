@@ -52,7 +52,7 @@ public class ApplicationController extends BaseController {
     }
 
     @GetMapping("{applicationId}")
-    public ResponseEntity<ApplicationDto> getTickets(@PathVariable Integer applicationId,
+    public ResponseEntity<ApplicationDto> getApplications(@PathVariable Integer applicationId,
                                                      @AuthenticationPrincipal UserDetails userDetails)
             throws UserNotExistsException, PermissionsException, EntityNotExists {
         User author = userService.getUser(userDetails.getUsername());
@@ -68,7 +68,7 @@ public class ApplicationController extends BaseController {
 
         applicationService.addApplication(applicationDto.getSlaId(), applicationDto.getTitle(),
                 applicationDto.getDescription(), applicationDto.getUserId(), author.getUserId(),
-                applicationDto.getHelpdeskId(), applicationDto.getGroupId());
+                applicationDto.getHelpdeskId(), applicationDto.getGroupId(), applicationDto.getTypeOfApplication());
 
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)

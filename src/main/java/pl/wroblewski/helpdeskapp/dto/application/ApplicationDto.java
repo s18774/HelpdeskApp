@@ -21,4 +21,6 @@ public class ApplicationDto {
     private Integer groupId;
     private Integer stageId;
     private Integer userId;
+    private String typeOfApplication;
+    private String resolverUser;
 }

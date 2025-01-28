@@ -15,4 +15,5 @@ public class ApplicationUpdateDto {
     private Integer stageId;
     private Integer groupId;
     private Integer helpdeskId;
+    private String typeOfApplication;
 }

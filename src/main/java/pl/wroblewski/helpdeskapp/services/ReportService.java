@@ -29,7 +29,7 @@ public class ReportService {
     public byte[] getHelpdeskReport(LocalDate dateFrom, LocalDate dateTo, Integer helpdeskId, String jobType,
                                     Integer userAuthorId) throws UserNotExistsException, PermissionsException, PdfException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
-        if (!RoleType.isAdmin(userAuthor)) {
+        if (!RoleType.isAdmin(userAuthor) && !(RoleType.isHelpdesk(userAuthor) && userAuthorId.equals(helpdeskId))) {
             throw new PermissionsException();
         }
         User helpdesk = null;

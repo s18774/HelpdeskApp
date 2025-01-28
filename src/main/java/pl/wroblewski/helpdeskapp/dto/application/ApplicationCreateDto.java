@@ -19,5 +19,7 @@ public class ApplicationCreateDto {
 
     @NotBlank
     private String title;
+    @NotBlank
+    private String typeOfApplication;
     private String description;
 }

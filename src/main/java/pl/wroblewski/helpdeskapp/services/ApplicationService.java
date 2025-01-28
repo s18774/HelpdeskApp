@@ -41,7 +41,7 @@ public class ApplicationService extends BasePermissionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void addApplication(Integer slaId, String subject, String description, Integer userId,
-                               Integer userAuthorId, Integer helpdeskId, Integer groupId)
+                               Integer userAuthorId, Integer helpdeskId, Integer groupId, String typeOfApplication)
             throws UserNotExistsException, PermissionsException, EntityNotExists {
         User user = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -68,6 +68,7 @@ public class ApplicationService extends BasePermissionService {
                 .subject(subject)
                 .description(description)
                 .sla(sla)
+                .typeOfApplication(typeOfApplication)
                 .build();
         applicationRepository.save(application);
 
