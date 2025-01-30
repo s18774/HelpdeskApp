@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/logs")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io")
 @RequiredArgsConstructor
 public class LogsController extends BaseController {
     private final LogsService logsService;

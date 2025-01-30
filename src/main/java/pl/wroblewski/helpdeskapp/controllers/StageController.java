@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/stage")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io")
 @RequiredArgsConstructor
 public class StageController extends BaseController {
     private final StageService stageService;

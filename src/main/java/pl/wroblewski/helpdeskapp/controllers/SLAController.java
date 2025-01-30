@@ -14,7 +14,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/sla")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io")
 @RequiredArgsConstructor
 public class SLAController extends BaseController {
     private final SLAService slaService;

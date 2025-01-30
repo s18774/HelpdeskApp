@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/device")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io")
 @RequiredArgsConstructor
 public class DeviceController extends BaseController {
     private final DeviceService deviceService;
