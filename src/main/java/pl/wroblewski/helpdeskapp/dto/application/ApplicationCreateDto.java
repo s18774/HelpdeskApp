@@ -21,5 +21,6 @@ public class ApplicationCreateDto {
     private String title;
     @NotBlank
     private String typeOfApplication;
+    @NotBlank
     private String description;
 }

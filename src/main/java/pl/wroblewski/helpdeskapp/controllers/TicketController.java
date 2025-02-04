@@ -25,7 +25,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/ticket")
-@CrossOrigin("https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io")
+@CrossOrigin( origins = {"https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io",
+        "http://localhost:3000"})
 @RequiredArgsConstructor
 public class TicketController extends BaseController {
     private final TicketService ticketService;
@@ -81,7 +82,7 @@ public class TicketController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
 
         ticketService.updateTicket(ticket.getTicketId(), ticket.getSlaId(), ticket.getStageId(),
-                ticket.getTitle(), ticket.getDescription(), ticket.getHelpdeskId(), author.getUserId());
+                ticket.getTitle(), ticket.getDescription(), ticket.getHelpdeskId(), ticket.getGroupId(), author.getUserId());
 
         return ResponseEntity.ok(BaseResponse.builder()
                 .success(true)

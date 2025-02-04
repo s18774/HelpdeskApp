@@ -14,4 +14,5 @@ public class TicketUpdateDto {
     private String description;
     private Integer stageId;
     private Integer helpdeskId;
+    private Integer groupId;
 }

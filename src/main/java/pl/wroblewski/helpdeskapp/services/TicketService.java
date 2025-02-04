@@ -107,7 +107,7 @@ public class TicketService extends BasePermissionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description,
-                             Integer helpdeskId, Integer userAuthorId)
+                             Integer helpdeskId, Integer groupId, Integer userAuthorId)
             throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         UserTicket userTicket = userTicketRepository.findByTicketId(ticketId)
@@ -128,6 +128,11 @@ public class TicketService extends BasePermissionService {
             helpdesk = userRepository.findById(helpdeskId).orElseThrow(UserNotExistsException::new);
         }
 
+        Group group = null;
+        if(groupId != null) {
+            group = groupRepository.findById(groupId).orElseThrow(() -> new EntityNotExists(Group.class));
+        }
+
         if (!RoleType.isAdmin(userAuthor) && helpdesk != userTicket.getHelpDeskId()) {
             throw new PermissionsException();
         }
@@ -139,6 +144,8 @@ public class TicketService extends BasePermissionService {
         ticketRepository.save(ticket);
 
         userTicket.setStageId(stage);
+        userTicket.setGroupId(group);
+
         if (stage.getStageName().equals("Closed")) {
             userTicket.setClosingDate(LocalDate.now());
             userTicket.setResolverUser(userAuthor);

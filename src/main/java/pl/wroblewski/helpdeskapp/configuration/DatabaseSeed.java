@@ -280,6 +280,7 @@ public class DatabaseSeed {
                     .applicationNumber(20L)
                     .description("This is test application description")
                     .subject("Test application")
+                    .typeOfApplication("Permission request")
                     .build(),
                 Application.builder()
                         .applicationId(2)
@@ -288,6 +289,7 @@ public class DatabaseSeed {
                         .applicationNumber(21L)
                         .description("This is test application description no 2")
                         .subject("Test application 2")
+                        .typeOfApplication("Order device")
                         .build()
         };
         for(var application : applications) {

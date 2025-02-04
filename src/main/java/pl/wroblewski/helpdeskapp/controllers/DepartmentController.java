@@ -14,7 +14,8 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/department")
-@CrossOrigin("https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io")
+@CrossOrigin( origins = {"https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io",
+        "http://localhost:3000"})
 @RequiredArgsConstructor
 public class DepartmentController extends BaseController {
     private final DepartmentService departmentService;

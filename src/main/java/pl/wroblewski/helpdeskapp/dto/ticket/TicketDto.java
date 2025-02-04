@@ -21,4 +21,5 @@ public class TicketDto {
     private Integer helpdeskId;
     private Integer userId;
     private String resolverUser;
+    private Integer groupId;
 }
