@@ -34,7 +34,7 @@ public class ApplicationController extends BaseController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<ApplicationDto>> getApplications(@PathParam("applicationId") Integer applicationId,
+    public ResponseEntity<List<ApplicationDto>> getApplications(@PathParam("applicationNumber") Integer applicationNumber,
                                                                 @PathParam("userId") Integer userId,
                                                                 @PathParam("slaId") Integer slaId,
                                                                 @PathParam("stageId") Integer stageId,
@@ -42,11 +42,8 @@ public class ApplicationController extends BaseController {
             throws UserNotExistsException {
         User author = userService.getUser(userDetails.getUsername());
 
-        var allApplications = applicationService
-                .getAllApplications(applicationId, userId, slaId, stageId, author.getUserId());
-
         return ResponseEntity.ok(applicationService
-                .getAllApplications(applicationId, userId, slaId, stageId, author.getUserId())
+                .getAllApplications(applicationNumber, userId, slaId, stageId, author.getUserId())
                 .stream()
                 .map(t -> modelMapper.map(t, ApplicationDto.class))
                 .toList());

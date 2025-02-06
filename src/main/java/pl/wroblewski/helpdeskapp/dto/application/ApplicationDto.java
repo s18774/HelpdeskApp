@@ -23,4 +23,5 @@ public class ApplicationDto {
     private Integer userId;
     private String typeOfApplication;
     private String resolverUser;
+    private Integer applicationNumber;
 }

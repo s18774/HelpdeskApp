@@ -15,11 +15,11 @@ public interface UserApplicationRepository extends CrudRepository<UserApplicatio
     //wyszukujemy wnioski konkretnego użytkownika
 
     @Query("Select ua FROM UserApplication ua INNER JOIN Application a ON a.applicationId = ua.id.applicationId " +
-            "WHERE (:applicationId IS NULL OR a.applicationId = :applicationId) " +
+            "WHERE (:applicationNumber IS NULL OR a.applicationNumber = :applicationNumber) " +
             "AND (:userId IS NULL OR ua.id.userId = :userId) " +
             "AND (:stageId IS NULL OR ua.stageId.stageId = :stageId) " +
             "AND (:slaId IS NULL OR a.sla.slaId = :slaId) ")
-    List<UserApplication> findByApplicationIdAndUserIdAndSlaIdAndStageId(@Param("applicationId") Integer applicationId,
+    List<UserApplication> findByApplicationNumberAndUserIdAndSlaIdAndStageId(@Param("applicationNumber") Integer applicationNumber,
                                                                          @Param("userId") Integer userId,
                                                                          @Param("slaId") Integer slaId,
                                                                          @Param("stageId") Integer stageId);

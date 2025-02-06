@@ -26,7 +26,7 @@ public class Application {
     private String typeOfApplication;
 
     @Column(name = "application_number")
-    private Long applicationNumber;
+    private Integer applicationNumber;
 
     @Column(name = "description", length = 300)
     private String description;

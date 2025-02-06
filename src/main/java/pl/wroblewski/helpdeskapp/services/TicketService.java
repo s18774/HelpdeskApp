@@ -27,7 +27,7 @@ public class TicketService extends BasePermissionService {
     private final LogsService logsService;
 
 
-    public List<UserTicket> getTickets(Integer ticketId, Integer userId, Integer slaId,
+    public List<UserTicket> getTickets(Integer ticketNumber, Integer userId, Integer slaId,
                                        Integer stageId, Integer userAuthorId)
             throws UserNotExistsException, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -35,7 +35,7 @@ public class TicketService extends BasePermissionService {
         if (RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return userTicketRepository.findByTicketIdAndUserIdAndSlaIdAndStageId(ticketId, userId, slaId, stageId);
+        return userTicketRepository.findByTicketNumberAndUserIdAndSlaIdAndStageId(ticketNumber, userId, slaId, stageId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -71,6 +71,7 @@ public class TicketService extends BasePermissionService {
         Stage stage = stageRepository.findById(1).orElseThrow(() -> new EntityNotExists(Stage.class));
 
         Ticket ticket = Ticket.builder()
+                .ticketNumber(ticketRepository.findMaxTicketNumber() + 1)
                 .title(title)
                 .description(description)
                 .department(department)

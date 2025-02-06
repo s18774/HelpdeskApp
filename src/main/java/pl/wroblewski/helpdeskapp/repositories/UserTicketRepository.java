@@ -14,11 +14,11 @@ import java.util.Optional;
 public interface UserTicketRepository extends CrudRepository<UserTicket, UserTicketId> {
 
     @Query("Select ut FROM UserTicket ut INNER JOIN Ticket t ON t.ticketId=ut.id.ticketId " +
-            "WHERE (:ticketId IS NULL OR t.ticketId = :ticketId) " +
+            "WHERE (:ticketNumber IS NULL OR t.ticketNumber = :ticketNumber) " +
             "AND (:userId IS NULL OR ut.id.userId = :userId) " +
             "AND (:stageId IS NULL OR ut.stageId.stageId = :stageId) " +
             "AND (:slaId IS NULL OR t.sla.slaId = :slaId) ")
-    List<UserTicket> findByTicketIdAndUserIdAndSlaIdAndStageId(@Param("ticketId") Integer ticketId,
+    List<UserTicket> findByTicketNumberAndUserIdAndSlaIdAndStageId(@Param("ticketNumber") Integer ticketNumber,
                                                                @Param("userId") Integer userId,
                                                                @Param("slaId") Integer slaId,
                                                                @Param("stageId") Integer stageId);

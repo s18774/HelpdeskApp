@@ -22,4 +22,5 @@ public class TicketDto {
     private Integer userId;
     private String resolverUser;
     private Integer groupId;
+    private Integer tickerNumber;
 }

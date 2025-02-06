@@ -35,7 +35,7 @@ public class TicketController extends BaseController {
 
 
     @GetMapping
-    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketId") Integer ticketId,
+    public ResponseEntity<List<TicketDto>> getTickets(@PathParam("ticketNumber") Integer ticketNumber,
                                                       @PathParam("userId") Integer userId,
                                                       @PathParam("slaId") Integer slaId,
                                                       @PathParam("stageId") Integer stageId,
@@ -44,7 +44,7 @@ public class TicketController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
 
         return ResponseEntity.ok(ticketService
-                .getTickets(ticketId, userId, slaId, stageId, author.getUserId())
+                .getTickets(ticketNumber, userId, slaId, stageId, author.getUserId())
                 .stream()
                 .map(t -> modelMapper.map(t, TicketDto.class))
                 .toList());

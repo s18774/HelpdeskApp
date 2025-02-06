@@ -24,7 +24,7 @@ public class DashboardService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public List<JobDto> getAllJobs(String jobType, Integer id, Integer userId, Integer slaId,
+    public List<JobDto> getAllJobs(String jobType, Integer jobNumber, Integer userId, Integer slaId,
                                    Integer stageId, Integer userAuthorId)
             throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -36,14 +36,14 @@ public class DashboardService {
         List<JobDto> result = new ArrayList<>();
         if (jobType == null || jobType.isEmpty() || jobType.equals("ticket")) {
             result.addAll(userTicketRepository
-                    .findByTicketIdAndUserIdAndSlaIdAndStageId(id, userId, slaId, stageId)
+                    .findByTicketNumberAndUserIdAndSlaIdAndStageId(jobNumber, userId, slaId, stageId)
                     .stream()
                     .map(obj -> modelMapper.map(obj, JobDto.class))
                     .toList());
         }
         if (jobType == null || jobType.isEmpty() || jobType.equals("application")) {
             result.addAll(userApplicationRepository
-                    .findByApplicationIdAndUserIdAndSlaIdAndStageId(id, userId, slaId, stageId)
+                    .findByApplicationNumberAndUserIdAndSlaIdAndStageId(jobNumber, userId, slaId, stageId)
                     .stream()
                     .map(obj -> modelMapper.map(obj, JobDto.class))
                     .toList());

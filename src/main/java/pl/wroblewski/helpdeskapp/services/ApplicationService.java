@@ -27,7 +27,7 @@ public class ApplicationService extends BasePermissionService {
     private final LogsService logsService;
 
 
-    public List<UserApplication> getAllApplications(Integer applicationId, Integer userId, Integer slaId,
+    public List<UserApplication> getAllApplications(Integer applicationNumer, Integer userId, Integer slaId,
                                                     Integer stageId, Integer userAuthorId)
             throws UserNotExistsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
@@ -35,7 +35,7 @@ public class ApplicationService extends BasePermissionService {
         if (RoleType.isUser(userAuthor)) {
             userId = userAuthorId;
         }
-        return userApplicationRepository.findByApplicationIdAndUserIdAndSlaIdAndStageId(applicationId,
+        return userApplicationRepository.findByApplicationNumberAndUserIdAndSlaIdAndStageId(applicationNumer,
                 userId, slaId, stageId);
     }
 
@@ -65,6 +65,7 @@ public class ApplicationService extends BasePermissionService {
         }
 
         Application application = Application.builder()
+                .applicationNumber(applicationRepository.findMaxApplicationNumber() + 1)
                 .subject(subject)
                 .description(description)
                 .sla(sla)
