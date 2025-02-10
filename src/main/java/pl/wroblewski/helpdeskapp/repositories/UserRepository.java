@@ -13,13 +13,14 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> findByUsername(String username);
 
-    List<User> findAllByRole(Role role);
+    List<User> findAllByRoleOrderBySecondName(Role role);
 
     @Query("Select u FROM _user u LEFT JOIN _Group g ON u.group.groupId=g.groupId " +
             "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
             "AND (:secondName IS NULL OR u.secondName LIKE %:secondName%) " +
             "AND (:positionName IS NULL OR u.positionName LIKE %:positionName%) " +
-            "AND (:groupName IS NULL OR u.group.groupName LIKE %:groupName%) ")
+            "AND (:groupName IS NULL OR u.group.groupName LIKE %:groupName%) " +
+            "ORDER BY u.secondName")
     List<User> findAllByFirstnameAndSecondNameAndPositionNameAndGroupName(@Param("firstName") String firstName,
                                                                           @Param("secondName") String secondName,
                                                                           @Param("positionName") String positionName,
@@ -28,14 +29,17 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     @Query("Select u FROM _user u  " +
             "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
             "AND (:secondName IS NULL OR u.secondName LIKE %:secondName%) " +
-            "AND (:positionName IS NULL OR u.positionName LIKE %:positionName%)")
+            "AND (:positionName IS NULL OR u.positionName LIKE %:positionName%) " +
+            "ORDER BY u.secondName")
     List<User> findAllByFirstnameAndSecondNameAndPositionName(@Param("firstName") String firstName,
                                                               @Param("secondName") String secondName,
                                                               @Param("positionName") String positionName);
 
-    List<User> findAllByGroup(Group group);
+    List<User> findAllByGroupOrderBySecondName(Group group);
 
     Optional<User> findByUserIdAndGroup(Integer userId, Group group);
+
+    List<User> findAllByOrderBySecondName();
 
     boolean existsByUsername(String username);
 }

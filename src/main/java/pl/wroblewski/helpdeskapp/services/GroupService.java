@@ -23,7 +23,7 @@ public class GroupService {
     private final LogsService logsService;
 
     public List<Group> getAllGroups() {
-        return (List<Group>) groupRepository.findAll();
+        return groupRepository.findAllByOrderByGroupName();
     }
 
     public Group createGroup(String groupName, int userAuthorId) throws PermissionsException, UserNotExistsException {
@@ -61,7 +61,7 @@ public class GroupService {
         }
 
         Group group = getGroup(groupId, userAuthorId);
-        return userRepository.findAllByGroup(group);
+        return userRepository.findAllByGroupOrderBySecondName(group);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)

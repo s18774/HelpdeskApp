@@ -13,6 +13,6 @@ public class DepartmentService {
     private final DepartmentRepository deoartmentReposiotry;
 
     public List<Department> getAllDepartments() {
-        return (List<Department>) deoartmentReposiotry.findAll();
+        return deoartmentReposiotry.findAllByOrderByBuilding();
     }
 }

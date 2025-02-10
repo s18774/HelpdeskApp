@@ -39,7 +39,7 @@ public class DeviceService {
     }
 
     public List<DeviceType> getAllTypes() {
-        return (List<DeviceType>) deviceTypeRepository.findAll();
+        return deviceTypeRepository.findAllByOrderByTypeDescription();
     }
 
     @Transactional

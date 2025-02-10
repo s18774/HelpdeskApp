@@ -22,6 +22,7 @@ import pl.wroblewski.helpdeskapp.exceptions.UserNotExistsException;
 import pl.wroblewski.helpdeskapp.models.User;
 import pl.wroblewski.helpdeskapp.services.UserService;
 
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -55,7 +56,8 @@ public class UserController extends BaseController {
             throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
         var users = userService.getAllUsersDetails(firstName, secondName, positionName, groupName, author.getUserId())
-                .stream().map(user -> modelMapper.map(user, UserDetailsDto.class))
+                .stream()
+                .map(user -> modelMapper.map(user, UserDetailsDto.class))
                 .toList();
         return ResponseEntity.ok(users);
     }

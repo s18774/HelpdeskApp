@@ -17,6 +17,7 @@ import pl.wroblewski.helpdeskapp.repositories.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -48,7 +49,7 @@ public class UserService implements UserDetailsService {
         if (RoleType.isUser(userAuthor)) {
             return List.of(userAuthor);
         }
-        return (List<User>) userRepository.findAll();
+        return userRepository.findAllByOrderBySecondName();
     }
 
     public List<User> getAllUsersDetails(String firstName, String secondName, String positionName,
@@ -68,14 +69,14 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> getAllHelpdesk() throws EntityNotExists {
-        Role helpdeskRole = roleRepository.findByRoleName(RoleType.HELP_DESK.getName())
+        Role helpdeskRole = roleRepository.findByRoleNameOrderByRoleName(RoleType.HELP_DESK.getName())
                 .orElseThrow(() -> new EntityNotExists(Role.class));
-        Role adminRole = roleRepository.findByRoleName(RoleType.ADMIN.getName())
+        Role adminRole = roleRepository.findByRoleNameOrderByRoleName(RoleType.ADMIN.getName())
                 .orElseThrow(() -> new EntityNotExists(Role.class));
 
-        ArrayList<User> users = new ArrayList<>(userRepository.findAllByRole(helpdeskRole));
-        users.addAll(userRepository.findAllByRole(adminRole));
-        return users;
+        ArrayList<User> users = new ArrayList<>(userRepository.findAllByRoleOrderBySecondName(helpdeskRole));
+        users.addAll(userRepository.findAllByRoleOrderBySecondName(adminRole));
+        return users.stream().sorted(Comparator.comparing(User::getSecondName)).toList();
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -128,7 +129,7 @@ public class UserService implements UserDetailsService {
     }
 
     public List<Role> getAllRoles() {
-        return (List<Role>) roleRepository.findAll();
+        return roleRepository.findAllByOrderByRoleName();
     }
 
     public List<ExperienceLevel> getAllExperienceLevels() {

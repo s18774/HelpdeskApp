@@ -13,8 +13,9 @@ public interface DeviceRepository extends CrudRepository<Device, Integer> {
             "WHERE (:deviceTypeId IS NULL OR d.deviceType.deviceTypeId = :deviceTypeId) " +
             "AND (:brand IS NULL OR d.brand LIKE %:brand%) " +
             "AND (:model IS NULL OR d.model LIKE %:model%) " +
-            "AND (:serialNumber IS NULL OR d.model LIKE %:serialNumber%) " +
-            "AND (:userId IS NULL OR ud.id.userId = :userId) ")
+            "AND (:serialNumber IS NULL OR d.serialNumber LIKE %:serialNumber%) " +
+            "AND (:userId IS NULL OR ud.id.userId = :userId) " +
+            "ORDER BY d.brand, d.model")
     List<Device> findByDeviceTypeIdAndBrandAndModelAndSerialNumberAndUserId(@Param("deviceTypeId") Integer deviceTypeId,
                                                                             @Param("brand") String brand,
                                                                             @Param("model") String model,
@@ -23,6 +24,7 @@ public interface DeviceRepository extends CrudRepository<Device, Integer> {
 
     @Query("SELECT d from Device d " +
             "LEFT JOIN UserDevice ud ON d.deviceId =ud.id.deviceId " +
-            "WHERE ud.user IS NULL")
+            "WHERE ud.user IS NULL " +
+            "ORDER BY d.brand, d.model")
     List<Device> getAllNotAttached();
 }

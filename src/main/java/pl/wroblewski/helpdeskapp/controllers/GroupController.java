@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class GroupController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<GroupDto> createGroup(@RequestBody GroupCreateDto groupCreateDto,
+    public ResponseEntity<GroupDto> createGroup(@RequestBody @Valid GroupCreateDto groupCreateDto,
                                                 @AuthenticationPrincipal UserDetails userDetails)
             throws UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
