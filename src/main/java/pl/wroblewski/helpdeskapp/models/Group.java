@@ -12,13 +12,12 @@ import lombok.*;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "group_id")
+    @Column(name = "group_id", nullable = false)
     private Integer groupId;
 
-    @Column(name = "group_name", length = 25)
+    @Column(name = "group_name", length = 25, nullable = false)
     private String groupName;
 
-    @Column(name = "isGroupActive")
+    @Column(name = "isGroupActive", nullable = false)
     private Byte isGroupActive;//1 yes, 0 nope
-
 }

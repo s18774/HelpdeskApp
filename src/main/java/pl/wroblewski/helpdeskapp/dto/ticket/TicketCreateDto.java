@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class TicketCreateDto {
     private Integer slaId;
+    @NotNull
     private Integer departmentId;
 
     @NotNull
@@ -25,4 +26,7 @@ public class TicketCreateDto {
     private String title;
 
     private String description;
+
+    @NotBlank
+    private String roomNumber;
 }

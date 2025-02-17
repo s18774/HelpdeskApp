@@ -12,10 +12,10 @@ import lombok.*;
 public class ExperienceLevel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "exp_id")
+    @Column(name = "exp_id", nullable = false)
     private Integer expId;
 
-    @Column(name = "exp_level", length = 10)
+    @Column(name = "exp_level", length = 10, nullable = false)
     private String expLevel;
 
 }

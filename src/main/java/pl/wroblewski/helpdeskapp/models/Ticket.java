@@ -12,7 +12,7 @@ import lombok.*;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ticket_id")
+    @Column(name = "ticket_id", nullable = false)
     private Integer ticketId;
 
     @ManyToOne
@@ -20,19 +20,19 @@ public class Ticket {
     private SLA sla;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @Column(name = "ticket_number")
+    @Column(name = "ticket_number", nullable = false)
     private Integer ticketNumber;
 
-    @Column(name = "floor")
+    @Column(name = "floor", nullable = false)
     private Integer floor;
 
-    @Column(name = "room_number")
-    private Integer roomNumber;
+    @Column(name = "room_number", nullable = false)
+    private String roomNumber;
 
-    @Column(name = "titile")
+    @Column(name = "titile", nullable = false)
     private String title;
 
     @Column(name = "description", length = 300)

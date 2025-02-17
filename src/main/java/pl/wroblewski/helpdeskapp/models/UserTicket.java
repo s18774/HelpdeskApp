@@ -17,12 +17,12 @@ public class UserTicket {
 
     @MapsId("userId")
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @MapsId("ticketId")
     @ManyToOne
-    @JoinColumn(name = "ticket_id")
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
     @ManyToOne
@@ -37,7 +37,7 @@ public class UserTicket {
     @JoinColumn(name = "group_id")
     private Group groupId;
 
-    @Column(name = "opening_date", nullable = true)
+    @Column(name = "opening_date", nullable = false)
     private LocalDate openingDate;
 
     @Column(name = "closing_date", nullable = true)//może być puste

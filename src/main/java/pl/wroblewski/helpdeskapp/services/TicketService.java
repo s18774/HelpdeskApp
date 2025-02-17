@@ -108,7 +108,7 @@ public class TicketService extends BasePermissionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateTicket(Integer ticketId, Integer slaId, Integer stageId, String title, String description,
-                             Integer helpdeskId, Integer groupId, Integer userAuthorId)
+                             Integer helpdeskId, Integer groupId, String roomNumber, Integer floor, Integer userAuthorId)
             throws UserNotExistsException, EntityNotExists, PermissionsException {
         User userAuthor = userRepository.findById(userAuthorId).orElseThrow(UserNotExistsException::new);
         UserTicket userTicket = userTicketRepository.findByTicketId(ticketId)
@@ -142,6 +142,8 @@ public class TicketService extends BasePermissionService {
         ticket.setSla(sla);
         ticket.setTitle(title);
         ticket.setDescription(description);
+        ticket.setFloor(floor);
+        ticket.setRoomNumber(roomNumber);
         ticketRepository.save(ticket);
 
         userTicket.setStageId(stage);

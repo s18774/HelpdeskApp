@@ -15,14 +15,14 @@ public class UserDevice {
 
     @MapsId("userId")
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @MapsId("deviceId")
     @ManyToOne
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
-    @Column(name = "location_of_device")
+    @Column(name = "location_of_device", nullable = false)
     private String locationOfDevice;
 }

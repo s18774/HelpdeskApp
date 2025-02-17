@@ -44,6 +44,8 @@ public class ModelMapperConfiguration {
                     mapper.map(t -> t.getResolverUser().getFullName(), TicketDto::setResolverUser);
                     mapper.map(t -> t.getGroupId().getGroupId(), TicketDto::setGroupId);
                     mapper.map(t -> t.getTicket().getTicketNumber(), TicketDto::setTickerNumber);
+                    mapper.map(t -> t.getTicket().getFloor(), TicketDto::setFloor);
+                    mapper.map(t -> t.getTicket().getRoomNumber(), TicketDto::setRoomNumber);
                 });
 
 

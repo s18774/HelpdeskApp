@@ -23,4 +23,6 @@ public class TicketDto {
     private String resolverUser;
     private Integer groupId;
     private Integer tickerNumber;
+    private String roomNumber;
+    private Integer floor;
 }

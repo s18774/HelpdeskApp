@@ -14,17 +14,17 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private int userId;
 
     @ManyToOne
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department departmentId;
 
-    @Column(name = "first_name", length = 20)
+    @Column(name = "first_name", length = 20, nullable = false)
     private String firstName;
 
-    @Column(name = "second_name", length = 20)
+    @Column(name = "second_name", length = 20, nullable = false)
     private String secondName;
 
     @Column(name = "phone_number", length = 12)
@@ -33,16 +33,16 @@ public class User {
     @Column(name = "email", length = 50)
     private String email;
 
-    @Column(name = "employment_date")
+    @Column(name = "employment_date", nullable = false)
     private LocalDate employmentDate;
 
-    @Column(name = "username", length = 20)
+    @Column(name = "username", length = 20, nullable = false)
     private String username;
 
-    @Column(name = "password", length = 100)
+    @Column(name = "password", length = 100, nullable = false)
     private String password;
 
-    @Column(name = "position_name", length = 25)
+    @Column(name = "position_name", length = 25, nullable = false)
     private String positionName;
 
     @Column(name = "floor")
@@ -55,7 +55,7 @@ public class User {
     private User supervisor;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @ManyToOne
@@ -63,7 +63,7 @@ public class User {
     private Group group;
 
     @ManyToOne
-    @JoinColumn(name = "exp_id")
+    @JoinColumn(name = "exp_id", nullable = false)
     private ExperienceLevel experienceLevel;
 
     public String getFullName() {

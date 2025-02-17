@@ -12,7 +12,7 @@ import lombok.*;
 public class Stage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stage_id")
+    @Column(name = "stage_id", nullable = false)
     private Integer stageId;
 
     @Column(name = "stage_name", length = 25)

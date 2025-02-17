@@ -16,29 +16,29 @@ public class Device {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "device_id")
+    @Column(name = "device_id", nullable = false)
     private Integer deviceId;
 
     @ManyToOne
-    @JoinColumn(name = "deviceType_id")
+    @JoinColumn(name = "deviceType_id", nullable = false)
     private DeviceType deviceType;
 
-    @Column(name = "brand", length = 20)
+    @Column(name = "brand", length = 20, nullable = false)
     private String brand;
 
     @Column(name = "model", length = 20)
     private String model;
 
-    @Column(name = "serial_number", length = 30)
+    @Column(name = "serial_number", length = 30, nullable = false)
     private String serialNumber;
 
-    @Column(name = "inventory_number", length = 30)
+    @Column(name = "inventory_number", length = 30, nullable = false)
     private String inventoryNumber;
 
-    @Column(name = "date_of_purchase")
+    @Column(name = "date_of_purchase", nullable = false)
     private LocalDateTime dateOfPurchase;
 
-    @Column(name = "isGuarantee")
+    @Column(name = "isGuarantee", nullable = false)
     private Byte isGuarantee;//1 means yes, 0 means no
 
     @Column(name = "ip_addres", nullable = true)

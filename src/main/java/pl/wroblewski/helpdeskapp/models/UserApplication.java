@@ -17,12 +17,12 @@ public class UserApplication {
 
     @MapsId("userId")
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @MapsId("applicationId")
     @ManyToOne
-    @JoinColumn(name = "application_id")
+    @JoinColumn(name = "application_id", nullable = false)
     private Application application;
 
     @ManyToOne
@@ -37,7 +37,7 @@ public class UserApplication {
     @JoinColumn(name = "group_id")
     private Group groupId;
 
-    @Column(name = "opening_date")
+    @Column(name = "opening_date", nullable = false)
     private LocalDate openingDate;
 
     @Column(name = "closing_date", nullable = true)

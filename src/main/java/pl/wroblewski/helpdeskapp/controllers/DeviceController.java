@@ -1,5 +1,6 @@
 package pl.wroblewski.helpdeskapp.controllers;
 
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -66,7 +67,7 @@ public class DeviceController extends BaseController {
     }
 
     @PostMapping
-    public ResponseEntity<DeviceDto> createDevice(@RequestBody DeviceCreateDto deviceCreateDto,
+    public ResponseEntity<DeviceDto> createDevice(@RequestBody @Valid DeviceCreateDto deviceCreateDto,
                                                   @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());

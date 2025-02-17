@@ -15,4 +15,6 @@ public class TicketUpdateDto {
     private Integer stageId;
     private Integer helpdeskId;
     private Integer groupId;
+    private String roomNumber;
+    private Integer floor;
 }

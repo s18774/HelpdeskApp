@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import pl.wroblewski.helpdeskapp.models.*;
 import pl.wroblewski.helpdeskapp.repositories.*;
 
@@ -29,6 +30,7 @@ public class DatabaseSeed {
     private final UserApplicationRepository userApplicationRepository;
 
     @Bean
+    @Transactional
     public void seedData() {
         seedRoles();
         seedGroups();
@@ -83,6 +85,7 @@ public class DatabaseSeed {
                         .floor(1)
                         .role(roleRepository.findById(3).get())
                         .employmentDate(LocalDate.now())
+                        .departmentId(departmentRepository.findById(1).get())
                         .build(),
                 User.builder()
                         .email("helpdesk@gmail.com")
@@ -95,6 +98,7 @@ public class DatabaseSeed {
                         .floor(1)
                         .role(roleRepository.findById(4).get())
                         .employmentDate(LocalDate.now())
+                        .departmentId(departmentRepository.findById(1).get())
                         .build(),
                 User.builder()
                         .email("user@gmail.com")
@@ -107,6 +111,7 @@ public class DatabaseSeed {
                         .floor(1)
                         .role(roleRepository.findById(2).get())
                         .employmentDate(LocalDate.now())
+                        .departmentId(departmentRepository.findById(1).get())
                         .build()
         };
         for (var user : users) {
@@ -154,6 +159,7 @@ public class DatabaseSeed {
                         .brand("Samsung")
                         .serialNumber("987654321")
                         .model("S24")
+                        .inventoryNumber("1234")
                         .build(),
                 Device.builder()
                         .deviceId(2)
@@ -163,6 +169,7 @@ public class DatabaseSeed {
                         .brand("HP")
                         .serialNumber("123456789")
                         .model("P27Q")
+                        .inventoryNumber("5678")
                         .build(),
         };
         for (var device : devices) {
@@ -218,7 +225,7 @@ public class DatabaseSeed {
                 Ticket.builder()
                         .ticketId(1)
                         .ticketNumber(12)
-                        .roomNumber(1)
+                        .roomNumber("1A")
                         .floor(1)
                         .description("This is test ticket")
                         .department(departmentRepository.findById(1).get())
@@ -228,7 +235,7 @@ public class DatabaseSeed {
                 Ticket.builder()
                         .ticketId(2)
                         .ticketNumber(15)
-                        .roomNumber(2)
+                        .roomNumber("2B")
                         .floor(2)
                         .description("This is test ticket no 2")
                         .department(departmentRepository.findById(2).get())

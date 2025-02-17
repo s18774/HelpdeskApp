@@ -13,9 +13,9 @@ import lombok.*;
 public class SLA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sla_id")
+    @Column(name = "sla_id", nullable = false)
     private Integer slaId;
 
-    @Column(name = "sla_level")
+    @Column(name = "sla_level", nullable = false)
     private Short slaLevel;
 }
