@@ -16,7 +16,6 @@ public class UserCreateDto {
     private String secondName;
     @NotBlank
     private String positionName;
-    @NotNull
     private Integer groupId;
     @NotNull
     private Integer departmentId;

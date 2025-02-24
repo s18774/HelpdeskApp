@@ -18,8 +18,7 @@ public class DeviceCreateDto {
     private String model;
     @NotBlank
     private String serialNumber;
-    @NotNull
-    private Boolean guarantee;
+    private boolean guarantee;
     @NotBlank
     private String inventoryNumber;
     private String macAddress;

@@ -73,7 +73,7 @@ public class DeviceController extends BaseController {
         User author = userService.getUser(userDetails.getUsername());
         var newDevice = deviceService.createDevice(deviceCreateDto.getDeviceTypeId(), deviceCreateDto.getBrand(),
                 deviceCreateDto.getModel(), deviceCreateDto.getSerialNumber(), deviceCreateDto.getInventoryNumber(),
-                deviceCreateDto.getGuarantee(), deviceCreateDto.getMacAddress(), author.getUserId());
+                deviceCreateDto.isGuarantee(), deviceCreateDto.getMacAddress(), author.getUserId());
         return ResponseEntity.ok(modelMapper.map(newDevice, DeviceDto.class));
     }
 
