@@ -67,7 +67,7 @@ public class TicketController extends BaseController {
 
         ticketService.addTicket(ticket.getSlaId(), ticket.getDepartmentId(), ticket.getFloor(),
                 ticket.getTitle(), ticket.getDescription(), ticket.getUserId(), author.getUserId(),
-                ticket.getHelpdeskId(), ticket.getGroupId());
+                ticket.getHelpdeskId(), ticket.getRoomNumber(), ticket.getGroupId());
 
         return new ResponseEntity<>(BaseResponse.builder()
                 .success(true)

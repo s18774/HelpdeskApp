@@ -109,7 +109,7 @@ public class UserController extends BaseController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updateUser(@RequestBody UserUpdateDto user,
+    public ResponseEntity<BaseResponse> updateUser(@RequestBody @Valid UserUpdateDto user,
                                                    @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotExists, UserNotExistsException, PermissionsException {
         User author = userService.getUser(userDetails.getUsername());
