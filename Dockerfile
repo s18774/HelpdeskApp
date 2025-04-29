@@ -4,9 +4,11 @@ FROM eclipse-temurin:17-jdk-focal
 WORKDIR /app
 
 # Skopiowanie plików konfiguracyjnych Maven
+
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
+RUN chmod +x ./mvnw
 # Pobranie zależności w trybie offline
 RUN ./mvnw dependency:go-offline -B
 
@@ -15,6 +17,8 @@ COPY src ./src
 
 # Budowanie aplikacji
 RUN ./mvnw package -DskipTests -B
+
+EXPOSE 8080
 
 # Uruchomienie aplikacji
 CMD ["./mvnw", "spring-boot:run"]
