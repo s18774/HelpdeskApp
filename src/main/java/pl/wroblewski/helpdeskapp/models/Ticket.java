@@ -37,5 +37,4 @@ public class Ticket {
 
     @Column(name = "description", length = 300)
     private String description;
-
 }

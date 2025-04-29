@@ -8,3 +8,7 @@ public interface TicketRepository extends CrudRepository<Ticket, Integer> {
     @Query(value = "SELECT MAX(t.ticketNumber) FROM Ticket t")
     Integer findMaxTicketNumber();
 }
+
+
+
+

@@ -1,7 +1,7 @@
 spring:
   datasource:
-#    url: jdbc:sqlserver://db;database=master;verifyServerCertificate=false;useSSL=false;encrypt=false;
-    url: jdbc:sqlserver://localhost;database=HelpDeskApp;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://db;database=master;verifyServerCertificate=false;useSSL=false;encrypt=false;
+#    url: jdbc:sqlserver://localhost;database=HelpDeskApp;encrypt=true;trustServerCertificate=true;
 #    url: jdbc:sqlserver://helpdeskappdb.database.windows.net:1433;database=HelpDeskApp;user=sauser@helpdeskappdb;password=Admin1234;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
 #    username: sauser
 #    password: Admin1234
