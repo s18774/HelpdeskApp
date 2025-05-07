@@ -9,64 +9,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @RequiredArgsConstructor
 public class DatabaseTriggerInit {
     private static final String userTickerTrigger = """          
-            CREATE TRIGGER createUserTicket
-                BEFORE INSERT ON user_ticket
+                CREATE TRIGGER updateUserTicketDefaults
+                AFTER INSERT ON user_ticket
                 FOR EACH ROW
                 BEGIN
-                    INSERT INTO user_ticket (
-                        ticket_id,\s
-                        user_id,\s
-                        closing_date,\s
-                        deadline_date,\s
-                        opening_date,\s
-                        helpdesk_id,\s
-                        stage_id
-                    )
-                    VALUES (
-                        NEW.ticket_id,
-                        NEW.user_id,
-                        NEW.closing_date,
-                        COALESCE(NEW.deadline_date, datetime('now', '+14 days')),
-                        COALESCE(NEW.opening_date, datetime('now')),
-                        NEW.helpdesk_id,
-                        NEW.stage_id
-                 
-                          );
-                
-                    SELECT RAISE(IGNORE);
+                    UPDATE user_ticket
+                    SET
+                        deadline_date = COALESCE(NEW.deadline_date, datetime('now', '+14 days')),
+                        opening_date = COALESCE(NEW.opening_date, datetime('now'))
+                    WHERE rowid = NEW.rowid;
                 END;
                 """;
 
     private static final String userApplicationTrigger = """   
-                
-            CREATE TRIGGER createUserApplication
-                BEFORE INSERT ON user_application
+                CREATE TRIGGER updateUserApplicationDefaults
+                AFTER INSERT ON user_application
                 FOR EACH ROW
                 BEGIN
-                    INSERT INTO user_application (
-                        application_id,\s
-                        user_id,\s
-                        closing_date,\s
-                        opening_date,\s
-                        helpdesk_id,\s
-                        stage_id,\s
-                        group_id
-                    )
-                    VALUES (
-                        NEW.application_id,
-                        NEW.user_id,
-                        NEW.closing_date,
-                        COALESCE(NEW.opening_date, datetime('now')),
-                        NEW.helpdesk_id,
-                        1,
-                        NEW.group_id
-                 
-                          );
-                
-                    SELECT RAISE(IGNORE);
-               
-                        END;
-                
+                    UPDATE user_application
+                    SET
+                        opening_date = COALESCE(NEW.opening_date, datetime('now')),
+                        stage_id = COALESCE(NEW.stage_id, 1)
+                    WHERE rowid = NEW.rowid;
+                END;
                 """;
 
     private final JdbcTemplate jdbcTemplate;
