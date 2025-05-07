@@ -10,7 +10,7 @@ import pl.wroblewski.helpdeskapp.utils.JwtTokenUtil;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@CrossOrigin( origins = {"https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io",
+@CrossOrigin( origins = {"https://helpdeskapp-pd29.onrender.com",
         "http://localhost:3000"})
 public class AuthController extends BaseController {
     private final JwtTokenUtil jwtTokenUtil;

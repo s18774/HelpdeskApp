@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/dashboard")
-@CrossOrigin( origins = {"https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io",
+@CrossOrigin( origins = {"https://helpdeskapp-pd29.onrender.com",
         "http://localhost:3000"})
 @RequiredArgsConstructor
 public class DashboardController extends BaseController {
