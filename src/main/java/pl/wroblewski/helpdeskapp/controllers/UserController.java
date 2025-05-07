@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
-@CrossOrigin( origins = {"https://helpdeskapp-pd29.onrender.com",
+@CrossOrigin( origins = {"https://helpdeskappfront.onrender.com",
         "http://localhost:3000"})
 @RequiredArgsConstructor
 public class UserController extends BaseController {

@@ -22,7 +22,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/report")
-@CrossOrigin( origins = {"https://helpdeskapp-pd29.onrender.com",
+@CrossOrigin( origins = {"https://helpdeskappfront.onrender.com",
         "http://localhost:3000"})
 @RequiredArgsConstructor
 public class ReportController extends BaseController {

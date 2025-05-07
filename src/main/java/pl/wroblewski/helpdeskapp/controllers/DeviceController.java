@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/device")
-@CrossOrigin( origins = {"https://helpdeskapp-pd29.onrender.com",
+@CrossOrigin( origins = {"https://helpdeskappfront.onrender.com",
         "http://localhost:3000"})
 @RequiredArgsConstructor
 public class DeviceController extends BaseController {
