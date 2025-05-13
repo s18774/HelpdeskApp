@@ -53,6 +53,10 @@ public class TicketService extends BasePermissionService {
         }
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
+        if(sla == null) {
+            sla = slaRepository.findById(1).get();
+        }
+
         Department department = null;
         if (departmentId != null) {
             department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotExists(Department.class));
@@ -88,6 +92,8 @@ public class TicketService extends BasePermissionService {
                 .groupId(group)
                 .helpDeskId(helpdesk)
                 .stageId(stage)
+                .deadlineDate(LocalDate.now().plusDays(14))
+                .openingDate(LocalDate.now())
                 .build();
         userTicketRepository.save(userTicket);
 
