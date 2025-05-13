@@ -83,6 +83,7 @@ public class ApplicationService extends BasePermissionService {
                 .groupId(group)
                 .helpDeskId(helpdesk)
                 .openingDate(LocalDate.now())
+                .stageId(stageRepository.findById(1).get())
                 .build();
         userApplicationRepository.save(userApplication);
 
