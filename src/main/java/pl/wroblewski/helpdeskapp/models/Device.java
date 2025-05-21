@@ -38,7 +38,7 @@ public class Device {
     @Column(name = "date_of_purchase", nullable = false)
     private LocalDateTime dateOfPurchase;
 
-    @Column(name = "isGuarantee", nullable = false)
+    @Column(name = "is_guarantee", nullable = false)
     private Byte isGuarantee;//1 means yes, 0 means no
 
     @Column(name = "ip_addres", nullable = true)

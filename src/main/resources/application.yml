@@ -1,4 +1,10 @@
 spring:
+  sql:
+    init:
+      mode: always
+  batch:
+    jdbc:
+      initialize-schema: always
   datasource:
     url: jdbc:sqlite:db.sqlite
     driver-class-name: org.sqlite.JDBC
@@ -12,10 +18,11 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.community.dialect.SQLiteDialect
+    defer-datasource-initialization: true
 
 
 jwt:

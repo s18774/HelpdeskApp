@@ -1,8 +1,10 @@
 package pl.wroblewski.helpdeskapp.configuration;
 
+import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import pl.wroblewski.helpdeskapp.models.*;
@@ -10,6 +12,7 @@ import pl.wroblewski.helpdeskapp.repositories.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,52 +32,62 @@ public class DatabaseSeed {
     private final ApplicationRepository applicationRepository;
     private final UserApplicationRepository userApplicationRepository;
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Bean
     @Transactional
     public void seedData() {
-        seedRoles();
-        seedGroups();
-        seedDepartments();
-        seedExperienceLevels();
-        seedUsers();
-        seedDeviceTypes();
-        seedDevices();
-        seedSLA();
-        seedStages();
-        seedTickets();
-        seedApplications();
+//        seedRoles();
+//        seedGroups();
+//        seedDepartments();
+//        seedExperienceLevels();
+//        seedUsers();
+//        seedDeviceTypes();
+//        seedDevices();
+//        seedSLA();
+//        seedStages();
+//        seedTickets();
+//        seedApplications();
     }
 
-    private void seedRoles() {
-        Role[] roles = {
-                Role.builder().roleId(1).roleName("Guest").build(),
-                Role.builder().roleId(2).roleName("User").build(),
-                Role.builder().roleId(3).roleName("Admin").build(),
-                Role.builder().roleId(4).roleName("HelpDesk").build(),
-        };
-        for (var role : roles) {
-            if (!roleRepository.existsById(role.getRoleId())) {
-                roleRepository.save(role);
-            }
-        }
-    }
+//    private void seedRoles() {
+//        Role[] roles = {
+//                Role.builder().roleId(1).roleName("Guest").build(),
+//                Role.builder().roleId(2).roleName("User").build(),
+//                Role.builder().roleId(3).roleName("Admin").build(),
+//                Role.builder().roleId(4).roleName("HelpDesk").build(),
+//        };
+//        for (var role : roles) {
+//            if (!roleRepository.existsById(role.getRoleId())) {
+//                roleRepository.save(role);
+//            }
+//        }
+//    }
+//    private void initData() {
+//        //        String sql = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'trigger' AND name = ?";
+//        Integer count = jdbcTemplate.execute(sql);
+//    }
 
-    private void seedGroups() {
-        Group[] groups = {
-                Group.builder().groupId(1).groupName("Grupa A").isGroupActive((byte) 1).build(),
-                Group.builder().groupId(2).groupName("Grupa B").isGroupActive((byte) 1).build(),
-                Group.builder().groupId(3).groupName("Grupa C").isGroupActive((byte) 0).build(),
-        };
-        for (var group : groups) {
-            if (!groupRepository.existsById(group.getGroupId())) {
-                groupRepository.save(group);
-            }
-        }
-    }
+//    private void seedGroups() {
+//        Group[] groups = {
+//                Group.builder().groupId(1).groupName("Developers").isGroupActive((byte) 1).build(),
+//                Group.builder().groupId(2).groupName("Support Team").isGroupActive((byte) 1).build(),
+//                Group.builder().groupId(3).groupName("HR & Payroll").isGroupActive((byte) 1).build(),
+//                Group.builder().groupId(4).groupName("IT Security").isGroupActive((byte) 1).build(),
+//                Group.builder().groupId(5).groupName("Project Management").isGroupActive((byte) 0).build(),
+//        };
+//
+//        for (var group : groups) {
+//            if (!groupRepository.existsById(group.getGroupId())) {
+//                groupRepository.save(group);
+//            }
+//        }
+//    }
 
     private void seedUsers() {
         User[] users = {
                 User.builder()
+                        .userId(1)
                         .email("admin@gmail.com")
                         .positionName("IT")
                         .password(passwordEncoder.encode("admin"))
@@ -88,6 +101,7 @@ public class DatabaseSeed {
                         .departmentId(departmentRepository.findById(1).get())
                         .build(),
                 User.builder()
+                        .userId(2)
                         .email("helpdesk@gmail.com")
                         .positionName("IT")
                         .password(passwordEncoder.encode("helpdesk"))
@@ -101,6 +115,7 @@ public class DatabaseSeed {
                         .departmentId(departmentRepository.findById(1).get())
                         .build(),
                 User.builder()
+                        .userId(3)
                         .email("user@gmail.com")
                         .positionName("IT")
                         .password(passwordEncoder.encode("user"))
@@ -119,13 +134,38 @@ public class DatabaseSeed {
                 userRepository.save(user);
             }
         }
+
+        Faker faker = new Faker();
+        Random random = new Random();
+
+        for(int id = 4; id < 30; id++) {
+            var user = User.builder()
+                    .userId(id)
+                    .email(faker.internet().emailAddress())
+                    .positionName("IT")
+                    .password(passwordEncoder.encode("user123"))
+                    .username(faker.name().username())
+                    .firstName(faker.name().firstName())
+                    .secondName(faker.name().lastName())
+                    .experienceLevel(experienceLevelRepository.findById(random.nextInt(1, 4)).get())
+                    .floor(random.nextInt(1, 20))
+                    .role(roleRepository.findById(random.nextInt(1, 5)).get())
+                    .employmentDate(LocalDate.now())
+                    .departmentId(departmentRepository.findById(random.nextInt(1, 6)).get())
+                    .build();
+            userRepository.save(user);
+        }
     }
 
     private void seedDepartments() {
         Department[] departments = {
                 Department.builder().departmentId(1).departmentName("IT").building("A").build(),
-                Department.builder().departmentId(2).departmentName("HR").building("B").build()
+                Department.builder().departmentId(2).departmentName("HR").building("B").build(),
+                Department.builder().departmentId(3).departmentName("Finance").building("C").build(),
+                Department.builder().departmentId(4).departmentName("Logistics").building("D").build(),
+                Department.builder().departmentId(5).departmentName("Marketing").building("E").build()
         };
+
         for (var department : departments) {
             if (!departmentRepository.existsById(department.getDepartmentId())) {
                 departmentRepository.save(department);
@@ -179,46 +219,46 @@ public class DatabaseSeed {
         }
     }
 
-    private void seedExperienceLevels() {
-        ExperienceLevel[] experienceLevels = {
-                ExperienceLevel.builder().expId(1).expLevel("Junior").build(),
-                ExperienceLevel.builder().expId(2).expLevel("Mid").build(),
-                ExperienceLevel.builder().expId(3).expLevel("Senior").build(),
-        };
-        for (var experienceLevel : experienceLevels) {
-            if (!experienceLevelRepository.existsById(experienceLevel.getExpId())) {
-                experienceLevelRepository.save(experienceLevel);
-            }
-        }
-    }
+//    private void seedExperienceLevels() {
+//        ExperienceLevel[] experienceLevels = {
+//                ExperienceLevel.builder().expId(1).expLevel("Junior").build(),
+//                ExperienceLevel.builder().expId(2).expLevel("Mid").build(),
+//                ExperienceLevel.builder().expId(3).expLevel("Senior").build(),
+//        };
+//        for (var experienceLevel : experienceLevels) {
+//            if (!experienceLevelRepository.existsById(experienceLevel.getExpId())) {
+//                experienceLevelRepository.save(experienceLevel);
+//            }
+//        }
+//    }
 
-    private void seedSLA() {
-        SLA[] slas = {
-                SLA.builder().slaId(1).slaLevel((short) 1).build(),
-                SLA.builder().slaId(2).slaLevel((short) 2).build(),
-                SLA.builder().slaId(3).slaLevel((short) 3).build(),
-                SLA.builder().slaId(4).slaLevel((short) 4).build(),
-                SLA.builder().slaId(5).slaLevel((short) 5).build(),
-        };
-        for (var sla : slas) {
-            if (!slaRepository.existsById(sla.getSlaId())) {
-                slaRepository.save(sla);
-            }
-        }
-    }
+//    private void seedSLA() {
+//        SLA[] slas = {
+//                SLA.builder().slaId(1).slaLevel((short) 1).build(),
+//                SLA.builder().slaId(2).slaLevel((short) 2).build(),
+//                SLA.builder().slaId(3).slaLevel((short) 3).build(),
+//                SLA.builder().slaId(4).slaLevel((short) 4).build(),
+//                SLA.builder().slaId(5).slaLevel((short) 5).build(),
+//        };
+//        for (var sla : slas) {
+//            if (!slaRepository.existsById(sla.getSlaId())) {
+//                slaRepository.save(sla);
+//            }
+//        }
+//    }
 
-    private void seedStages() {
-        Stage[] stages = {
-                Stage.builder().stageId(1).stageName("Open").build(),
-                Stage.builder().stageId(2).stageName("In progress").build(),
-                Stage.builder().stageId(3).stageName("Closed").build()
-        };
-        for (var stage : stages) {
-            if (!stageRepository.existsById(stage.getStageId())) {
-                stageRepository.save(stage);
-            }
-        }
-    }
+//    private void seedStages() {
+//        Stage[] stages = {
+//                Stage.builder().stageId(1).stageName("Open").build(),
+//                Stage.builder().stageId(2).stageName("In progress").build(),
+//                Stage.builder().stageId(3).stageName("Closed").build()
+//        };
+//        for (var stage : stages) {
+//            if (!stageRepository.existsById(stage.getStageId())) {
+//                stageRepository.save(stage);
+//            }
+//        }
+//    }
 
     private void seedTickets() {
         Ticket[] tickets = {
