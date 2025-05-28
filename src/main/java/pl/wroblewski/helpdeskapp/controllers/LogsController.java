@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/logs")
-@CrossOrigin( origins = {"https://frontend.wonderfulground-93721921.polandcentral.azurecontainerapps.io",
+@CrossOrigin( origins = {"https://helpdeskappfront.onrender.com",
         "http://localhost:3000"})
 @RequiredArgsConstructor
 public class LogsController extends BaseController {

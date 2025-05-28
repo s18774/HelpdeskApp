@@ -53,6 +53,9 @@ public class ApplicationService extends BasePermissionService {
         }
 
         SLA sla = slaRepository.findById(slaId).orElseThrow(() -> new EntityNotExists(SLA.class));
+        if(sla == null) {
+            sla = slaRepository.findById(1).get();
+        }
 
         User helpdesk = null;
         if (helpdeskId != null) {
@@ -79,6 +82,8 @@ public class ApplicationService extends BasePermissionService {
                 .application(application)
                 .groupId(group)
                 .helpDeskId(helpdesk)
+                .openingDate(LocalDate.now())
+                .stageId(stageRepository.findById(1).get())
                 .build();
         userApplicationRepository.save(userApplication);
 

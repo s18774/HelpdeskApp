@@ -2,6 +2,7 @@ package pl.wroblewski.helpdeskapp.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.wroblewski.helpdeskapp.converters.LocalDateStringConverter;
 
 import java.time.LocalDate;
 
@@ -34,6 +35,7 @@ public class User {
     private String email;
 
     @Column(name = "employment_date", nullable = false)
+    @Convert(converter = LocalDateStringConverter.class)
     private LocalDate employmentDate;
 
     @Column(name = "username", length = 20, nullable = false)

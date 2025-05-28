@@ -18,6 +18,6 @@ public class Group {
     @Column(name = "group_name", length = 25, nullable = false)
     private String groupName;
 
-    @Column(name = "isGroupActive", nullable = false)
+    @Column(name = "is_group_active", nullable = false)
     private Byte isGroupActive;//1 yes, 0 nope
 }
