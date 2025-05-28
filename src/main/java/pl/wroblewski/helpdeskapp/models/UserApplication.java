@@ -2,6 +2,7 @@ package pl.wroblewski.helpdeskapp.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.wroblewski.helpdeskapp.converters.LocalDateStringConverter;
 
 import java.time.LocalDate;
 
@@ -38,9 +39,11 @@ public class UserApplication {
     private Group groupId;
 
     @Column(name = "opening_date", nullable = false)
+    @Convert(converter = LocalDateStringConverter.class)
     private LocalDate openingDate;
 
     @Column(name = "closing_date", nullable = true)
+    @Convert(converter = LocalDateStringConverter.class)
     private LocalDate closingDate;
 
     @ManyToOne

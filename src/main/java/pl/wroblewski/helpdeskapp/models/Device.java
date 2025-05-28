@@ -2,6 +2,7 @@ package pl.wroblewski.helpdeskapp.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.wroblewski.helpdeskapp.converters.LocalDateTimeStringConverter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class Device {
     private String inventoryNumber;
 
     @Column(name = "date_of_purchase", nullable = false)
+    @Convert(converter = LocalDateTimeStringConverter.class)
     private LocalDateTime dateOfPurchase;
 
     @Column(name = "is_guarantee", nullable = false)

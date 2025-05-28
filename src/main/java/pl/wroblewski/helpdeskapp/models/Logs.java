@@ -2,6 +2,7 @@ package pl.wroblewski.helpdeskapp.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pl.wroblewski.helpdeskapp.converters.LocalDateTimeStringConverter;
 
 import java.time.LocalDateTime;
 
@@ -21,5 +22,6 @@ public class Logs {
     private String description;
 
     @Column(name = "date")
+    @Convert(converter = LocalDateTimeStringConverter.class)
     private LocalDateTime date;
 }
