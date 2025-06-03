@@ -105,9 +105,9 @@ INSERT INTO _user (user_id, department_id, first_name, second_name,
 VALUES (1, 1, 'Jan', 'Kowalski', NULL, 'admin@gmail.com', '2025-05-21', 'admin',
         '$2a$12$BEG9mAmDa9BDp6xHd3BRm.tBozCi/dMngVvgkeiL85ialGbF3t.nq', 'IT', 1, 2, NULL, 3, 1, 3),
        (2, 1, 'Adam', 'Nowak', NULL, 'helpdesk@gmail.com', '2025-05-21', 'helpdesk',
-        '$2a$12$BEG9mAmDa9BDp6xHd3BRm.tBozCi/dMngVvgkeiL85ialGbF3t.nq', 'IT', 1, 6, NULL, 4, 2, 1),
+        '$2a$12$6iHJb8LDP6zVdmXrLtXaUeXEaz1evEz6sbDmGucYmXEccms3VAo/m', 'IT', 1, 6, NULL, 4, 2, 1),
        (3, 1, 'Karol', 'Kowalczyk', NULL, 'user@gmail.com', '2025-05-21', 'user',
-        '$2a$12$BEG9mAmDa9BDp6xHd3BRm.tBozCi/dMngVvgkeiL85ialGbF3t.nq', 'IT', 1, 5, 1, 2, 3, 1);
+        '$2a$12$f3PNefLLQgUXgfL150kuCeTu6277bhLUDCoo6kZWIDqFfbLAHMiMi', 'IT', 1, 5, 1, 2, 3, 1);
 
 INSERT INTO _user (user_id, department_id, first_name, second_name, phone_number, email, employment_date, username,
                    password, position_name, floor, room, supervisor_user_id, role_id, group_id, exp_id)
