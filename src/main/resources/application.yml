@@ -1,19 +1,22 @@
 spring:
+  sql:
+    init:
+      mode: always
+    batch:
+      jdbc:
+        initialize-schema: always
   datasource:
     url: jdbc:sqlserver://db;database=master;verifyServerCertificate=false;useSSL=false;encrypt=false;
-#    url: jdbc:sqlserver://localhost;database=HelpDeskApp;encrypt=true;trustServerCertificate=true;
-#    url: jdbc:sqlserver://helpdeskappdb.database.windows.net:1433;database=HelpDeskApp;user=sauser@helpdeskappdb;password=Admin1234;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-#    username: sauser
-#    password: Admin1234
     username: user
     password: user123
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServer2012Dialect
+    defer-datasource-initialization: true
 
 
 jwt:
