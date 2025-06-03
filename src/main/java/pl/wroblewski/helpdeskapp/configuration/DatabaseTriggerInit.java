@@ -1,61 +1,30 @@
 package pl.wroblewski.helpdeskapp.configuration;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
-@Configuration
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+
+@Component
 @RequiredArgsConstructor
 public class DatabaseTriggerInit {
-    private static final String userTickerTrigger = """          
-                CREATE TRIGGER [dbo].[createUserTicket]
-                ON [dbo].[user_ticket]
-                INSTEAD OF INSERT
-                AS
-                BEGIN
-                    INSERT INTO user_ticket(ticket_id, user_id, closing_date, deadline_date, opening_date, helpdesk_id, stage_id)
-                    SELECT 
-                    ticket_id, 
-                    user_id, 
-                    closing_date, 
-                    COALESCE(deadline_date, DATEADD(WEEK, 2, GETDATE())), 
-                    COALESCE(opening_date, GETDATE()), 
-                    helpdesk_id, 
-                    stage_id
-                                
-                    FROM inserted
-                END;""";
-
-    private static final String userApplicationTrigger = """   
-                CREATE TRIGGER [dbo].[createUserApplication]
-                ON [dbo].[user_application]
-                INSTEAD OF INSERT
-                AS
-                BEGIN
-                    INSERT INTO [user_application]([application_id], user_id, closing_date, opening_date, helpdesk_id, stage_id, group_id)
-                    SELECT 
-                    [application_id], 
-                    user_id, 
-                    closing_date, 
-                    COALESCE(opening_date, GETDATE()), 
-                    helpdesk_id, 
-                    1,
-                    group_id
-                                
-                    FROM inserted
-                END;
-                """;
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Bean
+    @EventListener(ApplicationReadyEvent.class)
     public void initTriggers() {
-        if(!triggerExists("createUserTicket")) {
-            jdbcTemplate.execute(userTickerTrigger);
+        if (!triggerExists("createUserTicket")) {
+            executeSqlFromResource("createUserTicket.sql");
         }
-        if(!triggerExists("createUserApplication")) {
-            jdbcTemplate.execute(userApplicationTrigger);
+        if (!triggerExists("createUserApplication")) {
+            executeSqlFromResource("createUserApplication.sql");
         }
     }
 
@@ -63,5 +32,17 @@ public class DatabaseTriggerInit {
         String sql = "SELECT COUNT(*) FROM sys.triggers WHERE name = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, triggerName);
         return count != null && count > 0;
+    }
+
+    private void executeSqlFromResource(String path) {
+        try {
+            ClassPathResource resource = new ClassPathResource(path);
+            String sql = new BufferedReader(
+                    new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)
+            ).lines().collect(Collectors.joining("\n"));
+            jdbcTemplate.execute(sql);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to execute SQL from " + path, e);
+        }
     }
 }
